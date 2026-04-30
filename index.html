@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ElectEd — Election Process Education</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --ink:#0D1117;--ink-soft:#1C2433;--ink-mid:#2D3748;
+      --gold:#C08B2F;--gold-lt:#DBA84A;--gold-pale:#F2E2B8;
+      --red:#A8272A;--cream:#F8F4ED;--cream-dk:#EEE8DC;
+      --stone:#D4C9B6;--white:#FFFFFF;
+      --tx1:#0D1117;--tx2:#3D4A5C;--tx3:#7A8899;
+      --bd:rgba(13,17,23,0.10);--bd2:rgba(13,17,23,0.18);
+      --r-sm:6px;--r-md:10px;--r-lg:18px;--r-xl:28px;
+    }
+    html{scroll-behavior:smooth}
+    body{font-family:'Outfit',sans-serif;background:var(--cream);color:var(--tx1);overflow-x:hidden}
+
+    /* NAV */
+    nav{position:fixed;top:0;left:0;right:0;z-index:200;height:60px;
+      background:rgba(13,17,23,0.97);backdrop-filter:blur(20px);
+      border-bottom:1px solid rgba(192,139,47,0.18);
+      display:flex;align-items:center;padding:0 2.5rem;gap:2rem}
+    .logo{display:flex;align-items:center;gap:9px;text-decoration:none;flex-shrink:0}
+    .logo-mark{width:32px;height:32px;border-radius:7px;background:var(--gold);display:grid;place-items:center}
+    .logo-mark svg{width:17px;height:17px;fill:var(--ink)}
+    .logo-word{font-family:'Cormorant Garamond',serif;font-size:1.45rem;font-weight:700;color:#fff;letter-spacing:-.01em}
+    .logo-word em{color:var(--gold-lt);font-style:normal}
+    .nav-spacer{flex:1}
+    .nav-links{display:flex;gap:2px}
+    .nl{color:rgba(255,255,255,.55);text-decoration:none;font-size:.82rem;font-weight:500;
+      padding:6px 13px;border-radius:6px;transition:color .2s,background .2s}
+    .nl:hover{color:var(--gold-lt);background:rgba(192,139,47,.1)}
+    .nl-cta{background:var(--gold);color:var(--ink)!important;font-weight:600;border-radius:100px;padding:7px 18px}
+    .nl-cta:hover{background:var(--gold-lt)}
+    @media(max-width:860px){.nav-links{display:none}}
+
+    /* HERO */
+    #hero{min-height:100vh;background:var(--ink);padding:90px 2.5rem 5rem;
+      display:flex;align-items:center;position:relative;overflow:hidden}
+    .h-dots{position:absolute;inset:0;opacity:.035;
+      background-image:radial-gradient(circle at 1px 1px,#fff 1.2px,transparent 0);
+      background-size:36px 36px}
+    .h-blur1{position:absolute;top:-15%;right:-5%;width:55vw;height:55vw;max-width:700px;
+      background:radial-gradient(circle,rgba(192,139,47,.11) 0%,transparent 65%);pointer-events:none}
+    .h-blur2{position:absolute;bottom:-10%;left:-5%;width:40vw;height:40vw;max-width:500px;
+      background:radial-gradient(circle,rgba(168,39,42,.07) 0%,transparent 70%);pointer-events:none}
+    .h-rule{position:absolute;left:2.5rem;top:90px;bottom:5rem;width:1px;background:rgba(192,139,47,.15)}
+    .hero-wrap{max-width:1160px;margin:0 auto;width:100%;
+      display:grid;grid-template-columns:1fr 420px;gap:5rem;align-items:center;position:relative;z-index:1}
+    @media(max-width:900px){.hero-wrap{grid-template-columns:1fr}.h-card-col{display:none}}
+    .h-chip{display:inline-flex;align-items:center;gap:8px;
+      border:1px solid rgba(192,139,47,.28);background:rgba(192,139,47,.08);
+      padding:5px 14px;border-radius:100px;margin-bottom:1.6rem}
+    .h-chip-dot{width:5px;height:5px;border-radius:50%;background:var(--gold)}
+    .h-chip span{font-size:.72rem;font-weight:600;color:var(--gold-lt);letter-spacing:.1em;text-transform:uppercase}
+    .h-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2.6rem,5vw,4.2rem);
+      font-weight:700;color:#fff;line-height:1.06;letter-spacing:-.025em;margin-bottom:1.4rem}
+    .h-title .hl{color:var(--gold-lt);display:block;font-style:italic}
+    .h-body{font-size:1rem;font-weight:300;color:rgba(255,255,255,.55);line-height:1.75;max-width:430px;margin-bottom:2.4rem}
+    .h-btns{display:flex;gap:10px;flex-wrap:wrap}
+    .btn-a{display:inline-flex;align-items:center;gap:8px;background:var(--gold);color:var(--ink);
+      font-family:'Outfit',sans-serif;font-size:.9rem;font-weight:600;padding:13px 26px;
+      border-radius:100px;border:none;text-decoration:none;cursor:pointer;transition:all .2s}
+    .btn-a:hover{background:var(--gold-lt);transform:translateY(-1px)}
+    .btn-b{display:inline-flex;align-items:center;gap:8px;background:transparent;color:rgba(255,255,255,.75);
+      font-family:'Outfit',sans-serif;font-size:.9rem;font-weight:500;padding:13px 26px;
+      border-radius:100px;border:1px solid rgba(255,255,255,.18);text-decoration:none;cursor:pointer;transition:all .2s}
+    .btn-b:hover{border-color:rgba(255,255,255,.45)}
+    .h-counters{display:flex;gap:2.5rem;margin-top:3rem;padding-top:2rem;border-top:1px solid rgba(255,255,255,.07)}
+    .hc-num{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;color:var(--gold-lt)}
+    .hc-lbl{font-size:.75rem;color:rgba(255,255,255,.38);margin-top:1px}
+    .h-card{background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.09);
+      border-radius:var(--r-xl);padding:1.75rem;backdrop-filter:blur(8px);position:relative}
+    .h-card-lbl{font-size:.68rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:1.4rem}
+    .ms{display:flex;flex-direction:column}
+    .ms-item{display:flex;gap:13px;align-items:flex-start;padding:11px 0;
+      border-bottom:1px solid rgba(255,255,255,.05);cursor:pointer;transition:all .2s}
+    .ms-item:last-child{border-bottom:none}
+    .ms-item:hover .ms-n{background:var(--gold);color:var(--ink)}
+    .ms-n{width:29px;height:29px;border-radius:50%;flex-shrink:0;
+      background:rgba(192,139,47,.12);border:1px solid rgba(192,139,47,.25);
+      display:grid;place-items:center;
+      font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:500;color:var(--gold);transition:all .2s}
+    .ms-name{font-size:.85rem;font-weight:500;color:#fff;margin-bottom:2px}
+    .ms-sub{font-size:.72rem;color:rgba(255,255,255,.37);line-height:1.5}
+    .ms-tag{display:inline-block;margin-top:5px;padding:2px 9px;border-radius:100px;font-size:.65rem;font-weight:600}
+    .t-b{background:rgba(59,130,246,.14);color:#93C5FD}
+    .t-g{background:rgba(192,139,47,.14);color:var(--gold-lt)}
+    .t-e{background:rgba(80,160,80,.13);color:#86EFAC}
+    .t-r{background:rgba(168,39,42,.14);color:#FCA5A5}
+    .h-badge{position:absolute;top:-14px;right:20px;background:var(--red);color:#fff;
+      font-size:.72rem;font-weight:600;padding:6px 15px;border-radius:100px;
+      box-shadow:0 4px 14px rgba(168,39,42,.45);letter-spacing:.04em}
+
+    /* SECTION SHARED */
+    section{scroll-margin-top:60px}
+    .sc{max-width:1160px;margin:0 auto;padding:5.5rem 2.5rem}
+    .ey{font-size:.7rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);
+      margin-bottom:.65rem;display:flex;align-items:center;gap:10px}
+    .ey::before{content:'';display:block;width:28px;height:1px;background:var(--gold)}
+    .stitle{font-family:'Cormorant Garamond',serif;font-size:clamp(1.9rem,3vw,2.9rem);font-weight:700;
+      color:var(--ink);line-height:1.12;letter-spacing:-.022em;margin-bottom:.85rem}
+    .sdesc{font-size:.95rem;color:var(--tx2);line-height:1.75;max-width:500px;font-weight:300}
+
+    /* TIMELINE */
+    #timeline{background:var(--white)}
+    .tl-grid{margin-top:3.5rem}
+    .tl-steps{display:grid;grid-template-columns:repeat(4,1fr)}
+    @media(max-width:860px){.tl-steps{grid-template-columns:1fr 1fr}}
+    .ts{padding:1.75rem 1.5rem;border-right:1px solid var(--bd);border-bottom:1px solid var(--bd);
+      cursor:pointer;transition:background .22s}
+    .ts:nth-child(4n){border-right:none}
+    @media(max-width:860px){.ts:nth-child(4n){border-right:1px solid var(--bd)}.ts:nth-child(2n){border-right:none}}
+    .ts:hover{background:var(--cream)}
+    .ts.on{background:var(--ink)}
+    .ts.on .ts-ph{color:var(--gold)}
+    .ts.on .ts-num{background:var(--gold);color:var(--ink);border-color:var(--gold)}
+    .ts.on .ts-name{color:#fff}
+    .ts.on .ts-t{color:rgba(255,255,255,.4)}
+    .ts.on .ts-d{color:rgba(255,255,255,.55)}
+    .ts-num{width:36px;height:36px;border-radius:50%;background:var(--cream);border:1.5px solid var(--bd2);
+      display:grid;place-items:center;font-family:'JetBrains Mono',monospace;font-size:.8rem;font-weight:500;
+      color:var(--tx3);margin-bottom:.9rem;transition:all .22s}
+    .ts-ph{font-size:.65rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:3px}
+    .ts-name{font-size:.93rem;font-weight:600;color:var(--ink);margin-bottom:3px;transition:color .22s}
+    .ts-t{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--tx3);margin-bottom:7px}
+    .ts-d{font-size:.8rem;color:var(--tx2);line-height:1.55;transition:color .22s}
+    .tl-panel{background:var(--ink);padding:2.75rem 3rem;border-radius:0 0 var(--r-lg) var(--r-lg);display:none}
+    .tl-panel.open{display:block;animation:drop .28s ease}
+    @keyframes drop{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+    .tp-title{font-family:'Cormorant Garamond',serif;font-size:1.65rem;font-weight:700;color:var(--gold-lt);margin-bottom:.9rem}
+    .tp-body{font-size:.9rem;color:rgba(255,255,255,.62);line-height:1.8;margin-bottom:1.5rem;font-weight:300}
+    .tp-list{list-style:none;display:flex;flex-direction:column}
+    .tp-list li{display:flex;gap:12px;font-size:.84rem;color:rgba(255,255,255,.58);
+      padding:9px 0;border-bottom:1px solid rgba(255,255,255,.06);line-height:1.55}
+    .tp-list li::before{content:'›';color:var(--gold);font-size:1rem;flex-shrink:0}
+
+    /* PROCESS */
+    #process{background:var(--cream)}
+    .proc-wrap{display:grid;grid-template-columns:260px 1fr;gap:1.75rem;margin-top:3rem}
+    @media(max-width:760px){.proc-wrap{grid-template-columns:1fr}}
+    .proc-nav{background:var(--white);border:1px solid var(--bd);border-radius:var(--r-lg);overflow:hidden;height:fit-content;position:sticky;top:76px}
+    .pni{padding:.9rem 1.25rem;cursor:pointer;border-bottom:1px solid var(--bd);transition:background .18s;display:flex;gap:11px;align-items:center}
+    .pni:last-child{border-bottom:none}
+    .pni:hover{background:var(--cream)}
+    .pni.on{background:var(--ink)}
+    .pni.on .pni-ico{background:var(--gold);color:var(--ink)}
+    .pni.on .pni-lbl{color:#fff}
+    .pni.on .pni-sub{color:rgba(255,255,255,.45)}
+    .pni-ico{width:34px;height:34px;border-radius:7px;background:var(--cream-dk);display:grid;place-items:center;font-size:15px;flex-shrink:0;transition:all .18s}
+    .pni-lbl{font-size:.84rem;font-weight:600;color:var(--ink);transition:color .18s}
+    .pni-sub{font-size:.72rem;color:var(--tx3);transition:color .18s}
+    .proc-body{background:var(--white);border:1px solid var(--bd);border-radius:var(--r-lg);padding:2.25rem;min-height:480px}
+    .pp{display:none;animation:fi .28s ease}
+    .pp.on{display:block}
+    @keyframes fi{from{opacity:0}to{opacity:1}}
+    .pp-title{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:700;color:var(--ink);margin-bottom:.45rem}
+    .pp-desc{font-size:.9rem;color:var(--tx2);line-height:1.75;font-weight:300;margin-bottom:1.75rem;padding-bottom:1.75rem;border-bottom:1px solid var(--bd)}
+    .pp-steps{display:flex;flex-direction:column;gap:.85rem}
+    .psc{background:var(--cream);border:1px solid var(--bd);border-radius:var(--r-md);padding:1.1rem 1.35rem;display:flex;gap:.9rem;align-items:flex-start}
+    .psc-n{width:26px;height:26px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-size:.72rem;font-weight:600;flex-shrink:0;margin-top:1px}
+    .psc-t{font-size:.9rem;font-weight:600;color:var(--ink);margin-bottom:3px}
+    .psc-d{font-size:.81rem;color:var(--tx2);line-height:1.62;font-weight:300}
+    .psc-tag{display:inline-block;margin-top:7px;padding:2px 10px;border-radius:100px;font-size:.67rem;font-weight:600}
+    .ti{background:rgba(168,39,42,.09);color:var(--red)}
+    .tn{background:rgba(192,139,47,.09);color:var(--gold)}
+    .tr{background:rgba(13,17,23,.07);color:var(--ink)}
+
+    /* QUIZ */
+    #quiz{background:var(--ink)}
+    #quiz .stitle{color:#fff}
+    #quiz .ey{color:var(--gold)}
+    #quiz .ey::before{background:var(--gold)}
+    #quiz .sdesc{color:rgba(255,255,255,.5)}
+    .quiz-shell{background:rgba(255,255,255,.038);border:1px solid rgba(255,255,255,.09);
+      border-radius:var(--r-xl);padding:2.75rem;max-width:680px;margin:3rem auto 0}
+    .q-pips{display:flex;gap:5px;margin-bottom:1.75rem}
+    .q-pip{height:3px;border-radius:2px;flex:1;background:rgba(255,255,255,.12);transition:background .3s}
+    .q-pip.d{background:var(--gold)}
+    .q-pip.c{background:rgba(192,139,47,.42)}
+    .q-idx{font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:500;color:var(--gold);letter-spacing:.1em;margin-bottom:.65rem}
+    .q-q{font-family:'Cormorant Garamond',serif;font-size:1.38rem;font-weight:600;color:#fff;line-height:1.42;margin-bottom:1.75rem}
+    .q-opts{display:flex;flex-direction:column;gap:8px}
+    .q-opt{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:var(--r-md);
+      padding:.9rem 1.1rem;cursor:pointer;font-family:'Outfit',sans-serif;font-size:.88rem;
+      color:rgba(255,255,255,.68);text-align:left;transition:all .18s;display:flex;gap:11px;align-items:center}
+    .q-opt:hover:not([disabled]){background:rgba(192,139,47,.09);border-color:rgba(192,139,47,.32);color:#fff}
+    .q-opt.correct{background:rgba(74,222,128,.1);border-color:rgba(74,222,128,.32);color:#86EFAC;pointer-events:none}
+    .q-opt.wrong{background:rgba(248,113,113,.1);border-color:rgba(248,113,113,.3);color:#FCA5A5;pointer-events:none}
+    .q-opt.faded{pointer-events:none;opacity:.45}
+    .q-ltr{width:24px;height:24px;border-radius:50%;flex-shrink:0;background:rgba(255,255,255,.07);
+      display:grid;place-items:center;font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:500;color:rgba(255,255,255,.42)}
+    .q-fb{margin-top:1.1rem;padding:.9rem 1.1rem;border-radius:var(--r-md);font-size:.84rem;line-height:1.65;display:none}
+    .q-fb.on{display:block;animation:fi .28s}
+    .q-fb.ok{background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.22);color:#86EFAC}
+    .q-fb.no{background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.22);color:#FCA5A5}
+    .q-next{display:none;margin-top:1.35rem;align-items:center;gap:8px;background:var(--gold);color:var(--ink);
+      font-family:'Outfit',sans-serif;font-size:.88rem;font-weight:600;padding:10px 24px;
+      border:none;border-radius:100px;cursor:pointer;transition:background .2s}
+    .q-next.on{display:inline-flex}
+    .q-next:hover{background:var(--gold-lt)}
+    .q-score{text-align:center;display:none}
+    .q-score.on{display:block;animation:fi .4s}
+    .qs-n{font-family:'Cormorant Garamond',serif;font-size:5.5rem;font-weight:700;color:var(--gold-lt);line-height:1}
+    .qs-pct{font-size:.78rem;color:rgba(255,255,255,.4);margin:.4rem 0;font-family:'JetBrains Mono',monospace}
+    .qs-msg{font-size:1.05rem;color:rgba(255,255,255,.75);margin:1rem 0 1.75rem;font-weight:300}
+
+    /* AI ASSISTANT */
+    #assistant{background:var(--white)}
+    .chat-wrap{display:grid;grid-template-columns:1fr 340px;gap:1.75rem;margin-top:3rem}
+    @media(max-width:860px){.chat-wrap{grid-template-columns:1fr}}
+    .chat-win{border:1px solid var(--bd);border-radius:var(--r-xl);overflow:hidden;display:flex;flex-direction:column;height:580px}
+    .chat-hdr{background:var(--ink);padding:.9rem 1.4rem;display:flex;align-items:center;gap:11px;flex-shrink:0}
+    .c-av{width:38px;height:38px;border-radius:50%;background:var(--gold);display:grid;place-items:center}
+    .c-av svg{width:18px;height:18px;fill:var(--ink)}
+    .c-hdr-name{font-size:.87rem;font-weight:600;color:#fff}
+    .c-hdr-st{font-size:.72rem;color:rgba(255,255,255,.45);display:flex;align-items:center;gap:6px}
+    .sdot{width:6px;height:6px;border-radius:50%;background:#4ADE80}
+    .chat-msgs{flex:1;overflow-y:auto;padding:1.35rem;display:flex;flex-direction:column;gap:.9rem;background:var(--cream);scroll-behavior:smooth}
+    .chat-msgs::-webkit-scrollbar{width:3px}
+    .chat-msgs::-webkit-scrollbar-thumb{background:var(--stone);border-radius:2px}
+    .m{max-width:82%;display:flex;flex-direction:column;gap:3px}
+    .m.u{align-self:flex-end;align-items:flex-end}
+    .m.a{align-self:flex-start;align-items:flex-start}
+    .m-bub{padding:.8rem 1.05rem;font-size:.84rem;line-height:1.68;border-radius:16px}
+    .m.u .m-bub{background:var(--ink);color:rgba(255,255,255,.88);border-bottom-right-radius:4px}
+    .m.a .m-bub{background:var(--white);color:var(--tx1);border:1px solid var(--bd2);border-bottom-left-radius:4px;box-shadow:0 2px 10px rgba(13,17,23,.07)}
+    .m-t{font-size:.67rem;color:var(--tx3);padding:0 3px}
+    .typing{display:flex;gap:4px;align-items:center;padding:13px 17px}
+    .typing span{width:6px;height:6px;border-radius:50%;background:var(--tx3);animation:bob 1.1s infinite}
+    .typing span:nth-child(2){animation-delay:.18s}
+    .typing span:nth-child(3){animation-delay:.36s}
+    @keyframes bob{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+    .chat-in{padding:.9rem 1.25rem;background:var(--white);border-top:1px solid var(--bd);display:flex;gap:9px;align-items:flex-end;flex-shrink:0}
+    .c-ta{flex:1;font-family:'Outfit',sans-serif;font-size:.85rem;background:var(--cream);
+      border:1px solid var(--bd2);border-radius:10px;padding:9px 13px;resize:none;outline:none;
+      min-height:40px;max-height:110px;color:var(--tx1);transition:border .2s}
+    .c-ta:focus{border-color:var(--ink)}
+    .c-send{width:40px;height:40px;flex-shrink:0;background:var(--ink);border:none;border-radius:9px;
+      display:grid;place-items:center;cursor:pointer;transition:background .2s}
+    .c-send:hover{background:var(--ink-mid)}
+    .c-send svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2}
+    .c-send:disabled{opacity:.35;cursor:not-allowed}
+    .c-right{display:flex;flex-direction:column;gap:1rem}
+    .qq-box{background:var(--cream);border:1px solid var(--bd);border-radius:var(--r-lg);padding:1.5rem}
+    .qq-lbl{font-size:.68rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:.9rem}
+    .qq-list{display:flex;flex-direction:column;gap:7px}
+    .qq-btn{background:var(--white);border:1px solid var(--bd);border-radius:var(--r-md);padding:.78rem .95rem;
+      cursor:pointer;font-family:'Outfit',sans-serif;font-size:.81rem;color:var(--tx2);text-align:left;
+      transition:all .18s;font-weight:300;display:flex;gap:9px;align-items:flex-start;line-height:1.45}
+    .qq-btn:hover{border-color:var(--ink);color:var(--ink);background:var(--cream-dk)}
+    .qq-ico{font-size:13px;flex-shrink:0;margin-top:1px}
+    .key-box{background:rgba(192,139,47,.07);border:1px solid rgba(192,139,47,.18);border-radius:var(--r-md);padding:1rem 1.1rem;font-size:.78rem;line-height:1.65;color:var(--tx2)}
+    .key-box strong{color:var(--gold)}
+    .key-row{display:flex;gap:7px;margin-top:9px}
+    .key-inp{flex:1;font-family:'JetBrains Mono',monospace;font-size:.74rem;border:1px solid var(--bd2);
+      border-radius:var(--r-sm);padding:6px 9px;outline:none;background:var(--white);color:var(--tx1);transition:border .2s}
+    .key-inp:focus{border-color:var(--ink)}
+    .key-btn{background:var(--ink);color:#fff;font-family:'Outfit',sans-serif;font-size:.75rem;font-weight:600;border:none;border-radius:var(--r-sm);padding:6px 13px;cursor:pointer}
+    .key-btn:hover{background:var(--ink-mid)}
+    .key-err{margin-top:8px;font-size:.74rem;color:var(--red);display:none;line-height:1.5}
+    .key-err.on{display:block}
+
+    /* GLOSSARY */
+    #glossary{background:var(--cream)}
+    .gl-filter{display:flex;gap:8px;flex-wrap:wrap;margin:2rem 0 1.75rem}
+    .gl-f{padding:6px 15px;border-radius:100px;font-size:.78rem;font-weight:500;
+      border:1px solid var(--bd2);background:transparent;cursor:pointer;
+      color:var(--tx2);font-family:'Outfit',sans-serif;transition:all .18s}
+    .gl-f:hover{border-color:var(--ink);color:var(--ink)}
+    .gl-f.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+    .gl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:.9rem}
+    .gc{background:var(--white);border:1px solid var(--bd);border-radius:var(--r-md);padding:1.35rem 1.4rem;transition:all .22s}
+    .gc:hover{box-shadow:0 6px 28px rgba(13,17,23,.1);transform:translateY(-2px)}
+    .gc.hide{display:none}
+    .gc-w{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:700;color:var(--ink);margin-bottom:2px}
+    .gc-ph{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--gold);margin-bottom:7px}
+    .gc-d{font-size:.82rem;color:var(--tx2);line-height:1.65;font-weight:300}
+    .gc-cat{display:inline-block;margin-top:9px;padding:2px 9px;border-radius:100px;font-size:.67rem;font-weight:600;background:var(--cream-dk);color:var(--tx3)}
+
+    /* FOOTER */
+    footer{background:var(--ink);padding:3rem 2.5rem;border-top:1px solid rgba(192,139,47,.12)}
+    .ft-in{max-width:1160px;margin:0 auto}
+    .ft-top{display:flex;justify-content:space-between;align-items:flex-start;
+      padding-bottom:2rem;border-bottom:1px solid rgba(255,255,255,.07);flex-wrap:wrap;gap:2rem}
+    .ft-logo{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:700;color:#fff}
+    .ft-logo em{color:var(--gold-lt);font-style:normal}
+    .ft-tag{font-size:.8rem;color:rgba(255,255,255,.35);margin-top:4px;font-weight:300}
+    .ft-links{display:flex;gap:1.5rem;flex-wrap:wrap;align-items:center}
+    .ft-lk{color:rgba(255,255,255,.38);text-decoration:none;font-size:.82rem;transition:color .2s}
+    .ft-lk:hover{color:var(--gold-lt)}
+    .ft-bot{padding-top:1.75rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+    .ft-copy{font-size:.75rem;color:rgba(255,255,255,.28);font-weight:300}
+    .ft-credit{font-size:.75rem;color:rgba(255,255,255,.28);font-weight:300;display:flex;align-items:center;gap:5px}
+    .ft-credit strong{color:var(--gold-lt);font-weight:600}
+
+    /* reveal */
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity .45s ease,transform .45s ease}
+    .revealed{opacity:1;transform:none}
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="logo" href="#">
+    <div class="logo-mark">
+      <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+    </div>
+    <span class="logo-word">Elect<em>Ed</em></span>
+  </a>
+  <div class="nav-spacer"></div>
+  <div class="nav-links">
+    <a class="nl" href="#timeline">Timeline</a>
+    <a class="nl" href="#process">Process</a>
+    <a class="nl" href="#quiz">Quiz</a>
+    <a class="nl" href="#assistant">AI Assistant</a>
+    <a class="nl" href="#glossary">Glossary</a>
+    <a class="nl nl-cta" href="#assistant">Ask Anything ↗</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="h-dots"></div>
+  <div class="h-blur1"></div>
+  <div class="h-blur2"></div>
+  <div class="h-rule"></div>
+  <div class="hero-wrap">
+    <div>
+      <div class="h-chip"><div class="h-chip-dot"></div><span>AI-Powered Civic Education</span></div>
+      <h1 class="h-title">Understand How<span class="hl">Democracy Works</span></h1>
+      <p class="h-body">Master the complete election process — from voter registration to certification of results — through interactive timelines, step-by-step guides, and an AI assistant that answers every question.</p>
+      <div class="h-btns">
+        <a class="btn-a" href="#timeline">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Explore Timeline
+        </a>
+        <a class="btn-b" href="#assistant">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Ask AI Assistant
+        </a>
+      </div>
+      <div class="h-counters">
+        <div><div class="hc-num">8</div><div class="hc-lbl">Election Phases</div></div>
+        <div><div class="hc-num">30+</div><div class="hc-lbl">Key Concepts</div></div>
+        <div><div class="hc-num">AI</div><div class="hc-lbl">Live Assistant</div></div>
+      </div>
+    </div>
+    <div class="h-card-col" style="position:relative">
+      <div class="h-badge">🗳️ Election 101</div>
+      <div class="h-card">
+        <div class="h-card-lbl">Election Process at a Glance</div>
+        <div class="ms">
+          <div class="ms-item"><div class="ms-n">01</div><div><div class="ms-name">Voter Registration</div><div class="ms-sub">Citizens enroll to participate</div><span class="ms-tag t-b">Pre-Election</span></div></div>
+          <div class="ms-item"><div class="ms-n">02</div><div><div class="ms-name">Candidate Filing</div><div class="ms-sub">Declare candidacy & meet criteria</div><span class="ms-tag t-g">Pre-Election</span></div></div>
+          <div class="ms-item"><div class="ms-n">03</div><div><div class="ms-name">Primary Elections</div><div class="ms-sub">Parties select their nominees</div><span class="ms-tag t-e">Campaign</span></div></div>
+          <div class="ms-item"><div class="ms-n">04</div><div><div class="ms-name">Election Day</div><div class="ms-sub">Citizens cast their votes</div><span class="ms-tag t-r">Election Day</span></div></div>
+          <div class="ms-item"><div class="ms-n">05</div><div><div class="ms-name">Certification</div><div class="ms-sub">Results verified & winners declared</div><span class="ms-tag t-g">Post-Election</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TIMELINE -->
+<section id="timeline">
+  <div class="sc">
+    <div class="ey">Phase by Phase</div>
+    <h2 class="stitle">The Complete Election Timeline</h2>
+    <p class="sdesc">Click any phase to expand full detail, key actors, and important deadlines.</p>
+    <div class="tl-grid">
+      <div class="tl-steps" id="tlSteps"></div>
+      <div class="tl-panel" id="tlPanel"></div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section id="process">
+  <div class="sc">
+    <div class="ey">Deep Dive</div>
+    <h2 class="stitle">Step-by-Step Process Explorer</h2>
+    <p class="sdesc">Navigate each stage with detailed breakdowns and key requirements.</p>
+    <div class="proc-wrap">
+      <div class="proc-nav" id="procNav"></div>
+      <div class="proc-body" id="procBody"></div>
+    </div>
+  </div>
+</section>
+
+<!-- QUIZ -->
+<section id="quiz">
+  <div class="sc" style="text-align:center">
+    <div class="ey" style="justify-content:center">Test Yourself</div>
+    <h2 class="stitle">Election Knowledge Quiz</h2>
+    <p class="sdesc" style="margin:0 auto">How well do you understand the democratic process?</p>
+    <div class="quiz-shell" id="quizShell"></div>
+  </div>
+</section>
+
+<!-- AI ASSISTANT -->
+<section id="assistant">
+  <div class="sc">
+    <div class="ey">Powered by Claude AI</div>
+    <h2 class="stitle">Your Election AI Assistant</h2>
+    <p class="sdesc">Ask anything about elections, voting rights, the democratic process, or civic participation.</p>
+    <div class="chat-wrap">
+      <div class="chat-win">
+        <div class="chat-hdr">
+          <div class="c-av">
+            <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          </div>
+          <div>
+            <div class="c-hdr-name">ElectEd AI Assistant</div>
+            <div class="c-hdr-st"><span class="sdot"></span> Ready to help</div>
+          </div>
+        </div>
+        <div class="chat-msgs" id="chatMsgs"></div>
+        <div class="chat-in">
+          <textarea class="c-ta" id="chatIn" placeholder="Ask about elections, voting, candidates…" rows="1"></textarea>
+          <button class="c-send" id="chatSend">
+            <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="c-right">
+        <div class="qq-box">
+          <div class="qq-lbl">Quick Questions</div>
+          <div class="qq-list" id="qqList"></div>
+        </div>
+        <div class="key-box" id="keyBox">
+          <strong>🔑 Connect API Key</strong><br/>
+          Enter your Anthropic API key to activate the AI. Get one free at <a href="https://console.anthropic.com" style="color:var(--gold)">console.anthropic.com</a>
+          <div class="key-row">
+            <input type="password" class="key-inp" id="keyInp" placeholder="sk-ant-api03-…" autocomplete="off"/>
+            <button class="key-btn" id="keyBtn">Save</button>
+          </div>
+          <div class="key-err" id="keyErr"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GLOSSARY -->
+<section id="glossary">
+  <div class="sc">
+    <div class="ey">Key Vocabulary</div>
+    <h2 class="stitle">Election Glossary</h2>
+    <p class="sdesc">Master the essential terms used throughout the democratic process.</p>
+    <div class="gl-filter" id="glFilter"></div>
+    <div class="gl-grid" id="glGrid"></div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="ft-in">
+    <div class="ft-top">
+      <div>
+        <div class="ft-logo">Elect<em>Ed</em></div>
+        <div class="ft-tag">Making democracy understandable, one step at a time.</div>
+      </div>
+      <div class="ft-links">
+        <a class="ft-lk" href="#timeline">Timeline</a>
+        <a class="ft-lk" href="#process">Process</a>
+        <a class="ft-lk" href="#quiz">Quiz</a>
+        <a class="ft-lk" href="#assistant">AI Assistant</a>
+        <a class="ft-lk" href="#glossary">Glossary</a>
+      </div>
+    </div>
+    <div class="ft-bot">
+      <div class="ft-copy">© 2026 ElectEd — Election Process Education Platform</div>
+      <div class="ft-credit">Built with ❤️ by <strong>Rishi</strong></div>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ── DATA ── */
+const TL=[
+  {ph:"Pre-Election",name:"Voter Registration",t:"Ongoing / Varies",d:"Citizens register to vote, update address, or check status",
+   detail:{title:"Voter Registration",body:"Voter registration is the foundation of democratic participation. Before casting a ballot, citizens must enroll in the official voter registry. Requirements and deadlines vary by jurisdiction.",
+     pts:["Registration can be done online, by mail, or in person","Deadlines range from same-day to 30+ days before the election","Voters must update registration after changing address","Some states offer automatic voter registration (AVR) at the DMV","First-time voters may need to provide proof of identity","Voter rolls are maintained and cleaned before each election cycle"]}},
+  {ph:"Pre-Election",name:"Candidate Filing",t:"6–12 Months Before",d:"Prospective candidates declare candidacy and file required paperwork",
+   detail:{title:"Candidate Filing & Qualification",body:"The candidate filing process ensures that only qualified individuals appear on the ballot. Each office has specific eligibility requirements established by law.",
+     pts:["Candidates must meet age, citizenship, and residency requirements","Filing fees or petition signatures are typically required","Financial disclosure forms must be submitted to election authorities","Candidates must form a campaign committee and open a bank account","Party affiliation or independent status must be formally declared","Late filings are strictly rejected — deadlines are enforced"]}},
+  {ph:"Pre-Election",name:"Primary Elections",t:"3–6 Months Before",d:"Political parties select nominees for the general election",
+   detail:{title:"Primary Elections & Caucuses",body:"Primaries and caucuses are the mechanisms by which political parties choose their nominees. Different states use different formats with varying rules.",
+     pts:["Closed primaries: only registered party members may vote","Open primaries: any registered voter can participate","Caucuses use in-person gatherings and preference rounds","Presidential primaries allocate delegates to national conventions","Runoff elections may occur if no candidate wins a majority","Primary results determine which names appear on the general ballot"]}},
+  {ph:"Campaign",name:"Campaign Period",t:"Ongoing Until Election",d:"Candidates campaign, debate, fundraise, and reach voters",
+   detail:{title:"The Campaign Period",body:"The campaign period is when candidates make their case to voters through speeches, advertisements, debates, and community outreach. Campaign finance laws govern how money is raised and spent.",
+     pts:["Campaign contributions have legal limits set by the FEC","Candidates must file regular financial disclosure reports","Political advertising is regulated for transparency","Presidential debates are organized by nonpartisan commissions","Get-out-the-vote (GOTV) efforts intensify in the final weeks","Political action committees (PACs) can run independent expenditure campaigns"]}},
+  {ph:"Election Day",name:"Voting",t:"Election Day",d:"Registered voters cast ballots at polling places or by mail",
+   detail:{title:"Casting Your Vote",body:"Election Day is when registered voters exercise their most fundamental democratic right. Poll workers, observers, and officials work to ensure a fair and secure process.",
+     pts:["Polls are typically open from early morning to 7–8 PM","Voters may be required to show photo ID depending on state","Accessible voting options are required by the Americans with Disabilities Act","Provisional ballots are available when eligibility is in question","Absentee/mail-in voting is available in all states under various rules","Electioneering is prohibited within a set distance of polling places"]}},
+  {ph:"Post-Election",name:"Vote Counting",t:"Election Night & Days After",d:"Ballots tabulated by officials under bipartisan observation",
+   detail:{title:"Vote Counting & Tabulation",body:"Modern elections use a combination of hand-counting and electronic tabulation. The process is carefully controlled with bipartisan observers present throughout.",
+     pts:["In-person votes are often counted first, then mail-in ballots","Bipartisan teams observe all counting to ensure integrity","Electronic voting machines produce paper audit trails","Results are unofficial until formally canvassed and certified","Close races may trigger automatic recounts under state law","Counting can take days or weeks in high-volume elections"]}},
+  {ph:"Post-Election",name:"Certification",t:"Days to Weeks After",d:"Official legal review and certification of the final vote tallies",
+   detail:{title:"Canvassing & Certification",body:"Canvassing is the official process of reviewing and verifying vote tallies. After canvassing, election officials certify results, making them the official legal record.",
+     pts:["Canvassing boards review each precinct's returns for errors","Provisional and overseas ballots are evaluated and counted","Candidates may request recounts within legal windows","Election contests can be filed to challenge results in court","State certifications must meet federal deadlines for federal elections","Certification is signed by election authorities and made public record"]}},
+  {ph:"Transition",name:"Swearing-In",t:"Weeks to Months After",d:"Winners prepare to take office; outgoing officials hand over power",
+   detail:{title:"Transition of Power",body:"The peaceful transfer of power is one of democracy's most important features. After certification, winning candidates prepare to assume office.",
+     pts:["Presidential transition involves security briefings and team selection","Outgoing officials are legally required to cooperate with transitions","Congressional certifications occur for all federal offices","Inauguration ceremonies mark the official assumption of office","Winning candidates may need to resign from their current positions","The Electoral College meets to formally elect the President"]}}
+];
+
+const PROC=[
+  {ico:"📋",lbl:"Registration",sub:"How to register",title:"Voter Registration",
+   desc:"Voter registration is the gateway to democratic participation. The process varies by state but typically involves verifying identity, citizenship, and residency.",
+   steps:[
+     {t:"Check your eligibility",d:"Confirm you meet age (18+), citizenship, residency, and mental competency requirements. Some states allow 17-year-olds to vote in primaries if they'll be 18 by the general election.",tg:"tr",tl:"Required"},
+     {t:"Gather required documents",d:"Collect a valid ID (driver's license, passport, or state ID), proof of address, and your Social Security Number.",tg:"tr",tl:"Required"},
+     {t:"Complete the registration form",d:"Fill out your state's official voter registration form online, by mail, or in person. Provide accurate name, address, party affiliation, and identification details.",tg:"ti",tl:"Important"},
+     {t:"Submit before the deadline",d:"Most states have deadlines 15–30 days before Election Day. Some states offer same-day registration at the polls.",tg:"ti",tl:"Deadline"},
+     {t:"Confirm your registration",d:"Check your registration status online through your state's election website. You should receive a voter registration card by mail.",tg:"tn",tl:"Tip"},
+     {t:"Update if you move",d:"If you change your address, you must update your voter registration. Failure to do so may require a provisional ballot.",tg:"ti",tl:"Important"}
+   ]},
+  {ico:"🏛️",lbl:"Primaries",sub:"Party nominations",title:"Primary Elections",
+   desc:"Primary elections determine which candidate from each party will compete in the general election. Rules differ significantly between parties and states.",
+   steps:[
+     {t:"Understand primary types",d:"Open primaries allow any voter to participate; closed primaries restrict voting to registered party members; semi-closed allow independents to choose either party's primary.",tg:"tn",tl:"Varies by State"},
+     {t:"Check your party registration",d:"In closed primary states, ensure you're registered with the party whose primary you want to vote in. Changes may have their own deadlines.",tg:"tr",tl:"Required"},
+     {t:"Research the candidates",d:"Review candidate platforms, endorsements, voting records, and debate performances. Multiple candidates from the same party compete for the nomination.",tg:"tn",tl:"Tip"},
+     {t:"Vote in the primary",d:"Attend your designated polling place or vote by mail. Your vote helps determine which candidate will represent the party in the general election.",tg:"ti",tl:"Important"},
+     {t:"Understand delegate allocation",d:"In presidential primaries, candidates win delegates proportionally or winner-take-all depending on state rules. Delegates vote at the national convention.",tg:"tn",tl:"Presidential"}
+   ]},
+  {ico:"🗳️",lbl:"Election Day",sub:"Casting your vote",title:"Election Day Voting",
+   desc:"Election Day is when registered voters cast ballots to choose their elected officials. Preparation and knowing your rights ensures a smooth voting experience.",
+   steps:[
+     {t:"Find your polling place",d:"Your polling place is assigned based on your registered address. Look it up in advance on your state's election website. It may have changed.",tg:"tr",tl:"Required"},
+     {t:"Know what ID to bring",d:"ID requirements vary by state. Some require photo ID; others accept utility bills or affidavits. Research your state's specific requirements.",tg:"tr",tl:"Required"},
+     {t:"Review your sample ballot",d:"Download your sample ballot from your county clerk's website. Familiarize yourself with all races, measures, and candidates.",tg:"tn",tl:"Tip"},
+     {t:"Go to the polls",d:"If you're in line when polls close, you have the right to vote. Present your ID, sign the poll book, and receive your ballot.",tg:"ti",tl:"Important"},
+     {t:"Cast your ballot carefully",d:"Follow all instructions. For paper ballots, mark clearly within the designated area. Review before submitting. Spoiled ballots can be replaced.",tg:"ti",tl:"Important"},
+     {t:"Know your rights",d:"You have the right to a provisional ballot if your name isn't on the rolls. Electioneering is prohibited within 100 feet of polls.",tg:"ti",tl:"Know Your Rights"}
+   ]},
+  {ico:"📮",lbl:"Mail Voting",sub:"Absentee & mail-in",title:"Mail-In & Absentee Voting",
+   desc:"Mail-in voting allows eligible voters to cast ballots without appearing in person. Some states send ballots automatically; others require an application.",
+   steps:[
+     {t:"Apply for an absentee ballot",d:"In most states, request a mail ballot from your county clerk well before the deadline. Some states require a stated reason; others are 'no excuse' states.",tg:"tr",tl:"Required"},
+     {t:"Receive and verify your ballot",d:"When your ballot arrives, check that your name and address are correct. Your package will contain the ballot, a secrecy envelope, and a return envelope.",tg:"ti",tl:"Important"},
+     {t:"Complete the ballot",d:"Mark your choices per the instructions. Many states require black ink. Mistakes may invalidate the ballot — check if you can request a replacement.",tg:"tr",tl:"Required"},
+     {t:"Use the security envelope",d:"Place your completed ballot in the inner secrecy envelope (if provided), then in the outer return envelope. Sign and date as required.",tg:"tr",tl:"Required"},
+     {t:"Return by the deadline",d:"Return your ballot by mail with sufficient postage, or drop it at an official drop box. Track your ballot online to confirm receipt.",tg:"ti",tl:"Deadline"}
+   ]},
+  {ico:"🏆",lbl:"Results",sub:"Counting & certification",title:"Results & Certification",
+   desc:"After Election Day, votes are tallied, reviewed, and officially certified. This multi-step process ensures accuracy and integrity.",
+   steps:[
+     {t:"Initial tabulation",d:"Election machines and/or hand-counters begin tallying ballots. In-person votes are typically counted first, followed by mail and provisional ballots.",tg:"tn",tl:"Process"},
+     {t:"Unofficial results reported",d:"Media and election offices report results throughout election night. These are unofficial until canvassed. Close races may take days or weeks to call.",tg:"tn",tl:"Note"},
+     {t:"Canvassing board review",d:"The canvassing board officially reviews all returns from every precinct to check for discrepancies or errors before certifying results.",tg:"tr",tl:"Official Process"},
+     {t:"Recounts and challenges",d:"Losing candidates may request a recount. Election contests can be filed in court within a specified timeframe.",tg:"ti",tl:"Legal Rights"},
+     {t:"Official certification",d:"Election authorities sign and publish the certified results, making them the official legal record. Federal elections have statutory certification deadlines.",tg:"tr",tl:"Required"}
+   ]}
+];
+
+const QUIZ=[
+  {q:"What is the primary purpose of the Electoral College in U.S. presidential elections?",opts:["To directly elect the President and Vice President","To formally elect the President after citizens vote","To oversee the counting of ballots","To organize the presidential debates"],c:1,fb:"The Electoral College consists of 538 electors who formally elect the President. Citizens vote for electors pledged to a candidate. A candidate needs 270 electoral votes to win."},
+  {q:"Which of the following is typically NOT a requirement to vote in U.S. federal elections?",opts:["U.S. citizenship","Being at least 18 years old","Owning property or paying taxes","Residing in the state where you register"],c:2,fb:"Property ownership and tax payment are NOT voting requirements. The 24th Amendment (1964) specifically banned poll taxes. All U.S. citizens 18+ who meet residency requirements may vote."},
+  {q:"What is a 'closed primary' election?",opts:["A primary where results are kept secret","A primary where only registered party members may vote","A primary held after the general election","A primary with only two candidates"],c:1,fb:"A closed primary restricts voting to registered members of that particular party. This contrasts with an 'open primary' where any registered voter can participate."},
+  {q:"What is the purpose of a 'provisional ballot'?",opts:["A test ballot used to check voting machines","A ballot used when a voter's eligibility is questioned","A mail-in ballot sent before Election Day","A ballot used in overseas voting"],c:1,fb:"Provisional ballots are used when there's a question about a voter's eligibility at the polling place. The ballot is set aside and reviewed after polls close."},
+  {q:"What is 'canvassing' in the context of election administration?",opts:["Going door-to-door to campaign for a candidate","The official process of reviewing and verifying vote tallies","Designing campaign materials and posters","Training poll workers before Election Day"],c:1,fb:"In election administration, canvassing is the official process by which election authorities review and verify all vote tallies before certifying results. Distinct from campaign canvassing."},
+  {q:"The Federal Election Commission (FEC) primarily regulates which aspect of elections?",opts:["The drawing of congressional district boundaries","Campaign finance and political advertising spending","The administration of polling places","Voter ID requirements"],c:1,fb:"The FEC enforces federal campaign finance laws — contribution limits, spending disclosure, and public funding of presidential campaigns."},
+  {q:"Which amendment to the U.S. Constitution extended voting rights to women?",opts:["13th Amendment","15th Amendment","19th Amendment","26th Amendment"],c:2,fb:"The 19th Amendment (1920) granted women the right to vote. The 13th abolished slavery, the 15th prohibited denying the vote based on race, and the 26th lowered the voting age to 18."},
+  {q:"What is 'gerrymandering'?",opts:["The process of updating voter registration rolls","Manipulating district boundaries for political advantage","The practice of voting multiple times","A system of proportional representation"],c:1,fb:"Gerrymandering is the manipulation of electoral district boundaries to give one party an unfair advantage. The term dates to 1812, when Governor Elbridge Gerry approved a contorted district shaped like a salamander."}
+];
+
+const GLOSS=[
+  {w:"Ballot",ph:"/ˈbæl.ət/",d:"The document or electronic interface used by voters to record their choices. Can be paper, electronic, or mail-in.",cat:"Voting"},
+  {w:"Caucus",ph:"/ˈkɔː.kəs/",d:"A meeting of local party members to select candidates or determine policy. Used in some states instead of a primary to choose presidential nominees.",cat:"Nomination"},
+  {w:"Delegate",ph:"/ˈdel.ɪ.ɡɪt/",d:"A representative chosen to attend a party's national convention, pledged to vote for a particular candidate for the presidential nomination.",cat:"Party Politics"},
+  {w:"Electoral College",ph:"/ɪˌlek.tər.əl ˈkɒl.ɪdʒ/",d:"The body of 538 electors established by the U.S. Constitution to formally elect the President and Vice President.",cat:"U.S. Federal"},
+  {w:"Filibuster",ph:"/ˈfɪl.ɪ.bʌs.tər/",d:"A Senate tactic to delay or block legislation by extending debate. Requires 60 votes (cloture) to end.",cat:"Legislative"},
+  {w:"Gerrymander",ph:"/ˈdʒer.i.mæn.dər/",d:"Manipulation of electoral district boundaries to favor a political party, racial group, or class.",cat:"Districts"},
+  {w:"Incumbent",ph:"/ɪnˈkʌm.bənt/",d:"The current holder of a political office seeking re-election. Incumbents typically have an advantage due to name recognition and fundraising.",cat:"Candidates"},
+  {w:"Initiative",ph:"/ɪˈnɪʃ.ə.tɪv/",d:"A process by which citizens can propose and vote on new laws or constitutional amendments through signature collection.",cat:"Direct Democracy"},
+  {w:"Precinct",ph:"/ˈpriː.sɪŋkt/",d:"The smallest geographic unit for electoral purposes. Each precinct has a designated polling place where its registered voters cast ballots.",cat:"Administration"},
+  {w:"Provisional Ballot",ph:"/prəˈvɪʒ.ən.əl/",d:"A ballot cast when a voter's eligibility is uncertain at the polling place. Kept separate and counted after eligibility is verified.",cat:"Voting"},
+  {w:"Recount",ph:"/ˈriː.kaʊnt/",d:"An additional official tally of votes to verify accuracy, typically triggered when the margin of victory is very small.",cat:"Post-Election"},
+  {w:"Suffrage",ph:"/ˈsʌf.rɪdʒ/",d:"The right to vote in political elections. Universal suffrage extends this right to all citizens regardless of gender, race, or property ownership.",cat:"Voting Rights"},
+  {w:"Swing State",ph:"/swɪŋ steɪt/",d:"A state where both major parties have similar levels of support, making its electoral votes highly contested. Also called a battleground state.",cat:"Strategy"},
+  {w:"Ticket Splitting",ph:"/ˈtɪk.ɪt ˌsplɪt.ɪŋ/",d:"Voting for candidates from different parties for different offices on the same ballot.",cat:"Voting"},
+  {w:"Turnout",ph:"/ˈtɜːn.aʊt/",d:"The percentage of eligible voters who actually vote in an election. High turnout is a sign of healthy democratic participation.",cat:"Metrics"},
+  {w:"Referendum",ph:"/ˌref.əˈren.dəm/",d:"A direct vote in which an entire electorate votes on a particular proposal, law, or constitutional amendment.",cat:"Direct Democracy"}
+];
+
+const QQ=[
+  {ico:"🗳️",t:"How does the Electoral College work?"},
+  {ico:"📝",t:"How do I register to vote?"},
+  {ico:"📮",t:"What's the difference between absentee and mail-in voting?"},
+  {ico:"🏛️",t:"What is a primary election?"},
+  {ico:"⚖️",t:"What are my voting rights if I'm turned away at the polls?"},
+  {ico:"🔢",t:"How are votes counted and certified?"},
+  {ico:"📊",t:"What is gerrymandering and why does it matter?"},
+  {ico:"🌍",t:"How do other countries run their elections?"}
+];
+
+/* ── BUILD TIMELINE ── */
+function buildTimeline(){
+  const wrap=document.getElementById('tlSteps');
+  TL.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='ts reveal';
+    el.innerHTML=`<div class="ts-num">${String(i+1).padStart(2,'0')}</div>
+      <div class="ts-ph">${s.ph}</div><div class="ts-name">${s.name}</div>
+      <div class="ts-t">${s.t}</div><div class="ts-d">${s.d}</div>`;
+    el.addEventListener('click',()=>{
+      const wasOn=el.classList.contains('on');
+      document.querySelectorAll('.ts').forEach(x=>x.classList.remove('on'));
+      const panel=document.getElementById('tlPanel');
+      if(wasOn){panel.classList.remove('open');return;}
+      el.classList.add('on');
+      panel.innerHTML=`<div style="max-width:820px">
+        <div class="tp-title">${s.detail.title}</div>
+        <div class="tp-body">${s.detail.body}</div>
+        <ul class="tp-list">${s.detail.pts.map(p=>`<li>${p}</li>`).join('')}</ul>
+      </div>`;
+      panel.classList.add('open');
+    });
+    wrap.appendChild(el);
+  });
+}
+
+/* ── BUILD PROCESS ── */
+function buildProcess(){
+  const nav=document.getElementById('procNav');
+  const body=document.getElementById('procBody');
+  PROC.forEach((p,i)=>{
+    const ni=document.createElement('div');
+    ni.className='pni'+(i===0?' on':'');
+    ni.innerHTML=`<div class="pni-ico">${p.ico}</div>
+      <div><div class="pni-lbl">${p.lbl}</div><div class="pni-sub">${p.sub}</div></div>`;
+    ni.addEventListener('click',()=>{
+      document.querySelectorAll('.pni').forEach(x=>x.classList.remove('on'));
+      document.querySelectorAll('.pp').forEach(x=>x.classList.remove('on'));
+      ni.classList.add('on');
+      document.getElementById(`pp${i}`).classList.add('on');
+    });
+    nav.appendChild(ni);
+    const panel=document.createElement('div');
+    panel.className='pp'+(i===0?' on':'');
+    panel.id=`pp${i}`;
+    panel.innerHTML=`<div class="pp-title">${p.title}</div>
+      <div class="pp-desc">${p.desc}</div>
+      <div class="pp-steps">${p.steps.map((s,j)=>`
+        <div class="psc">
+          <div class="psc-n">${j+1}</div>
+          <div><div class="psc-t">${s.t}</div><div class="psc-d">${s.d}</div>
+          <span class="psc-tag ${s.tg}">${s.tl}</span></div>
+        </div>`).join('')}
+      </div>`;
+    body.appendChild(panel);
+  });
+}
+
+/* ── QUIZ ── */
+let qi=0,score=0;
+function renderQ(){
+  const shell=document.getElementById('quizShell');
+  if(qi>=QUIZ.length){renderScore();return;}
+  const q=QUIZ[qi];
+  const pips=QUIZ.map((_,i)=>`<div class="q-pip${i<qi?' d':i===qi?' c':''}"></div>`).join('');
+  shell.innerHTML=`
+    <div class="q-pips">${pips}</div>
+    <div class="q-idx">Question ${qi+1} / ${QUIZ.length}</div>
+    <div class="q-q">${q.q}</div>
+    <div class="q-opts">${q.opts.map((o,i)=>`
+      <button class="q-opt" data-i="${i}">
+        <span class="q-ltr">${['A','B','C','D'][i]}</span>${o}
+      </button>`).join('')}
+    </div>
+    <div class="q-fb" id="qfb"></div>
+    <button class="q-next" id="qnxt">Next Question →</button>`;
+  let answered=false;
+  document.querySelectorAll('.q-opt').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      if(answered)return;
+      answered=true;
+      const chosen=+btn.dataset.i;
+      document.querySelectorAll('.q-opt').forEach(b=>{
+        const bi=+b.dataset.i;
+        if(bi===q.c)b.classList.add('correct');
+        else if(bi===chosen)b.classList.add('wrong');
+        else b.classList.add('faded');
+      });
+      if(chosen===q.c)score++;
+      const fb=document.getElementById('qfb');
+      fb.textContent=(chosen===q.c?'✓ Correct! ':'✗ Not quite. ')+q.fb;
+      fb.className='q-fb on '+(chosen===q.c?'ok':'no');
+      const nxt=document.getElementById('qnxt');
+      nxt.classList.add('on');
+      nxt.addEventListener('click',()=>{qi++;renderQ();});
+    });
+  });
+}
+function renderScore(){
+  const pct=Math.round((score/QUIZ.length)*100);
+  const msg=pct>=90?'🏆 Outstanding! You\'re a democracy expert!':pct>=70?'🌟 Great work! Strong civic knowledge.':pct>=50?'📚 Good start — keep learning about elections.':'🔍 Keep studying — democracy is worth understanding!';
+  document.getElementById('quizShell').innerHTML=`
+    <div class="q-score on">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:.7rem;color:rgba(255,255,255,.38);letter-spacing:.12em;text-transform:uppercase;margin-bottom:.5rem">Your Score</div>
+      <div class="qs-n">${score}/${QUIZ.length}</div>
+      <div class="qs-pct">${pct}% correct</div>
+      <div class="qs-msg">${msg}</div>
+      <button class="btn-a" onclick="qi=0;score=0;renderQ()">Try Again ↺</button>
+    </div>`;
+}
+
+/* ── GLOSSARY ── */
+function buildGlossary(){
+  const cats=['All',...new Set(GLOSS.map(g=>g.cat))];
+  const filters=document.getElementById('glFilter');
+  cats.forEach(c=>{
+    const b=document.createElement('button');
+    b.className='gl-f'+(c==='All'?' on':'');
+    b.textContent=c;
+    b.addEventListener('click',()=>{
+      document.querySelectorAll('.gl-f').forEach(x=>x.classList.remove('on'));
+      b.classList.add('on');
+      document.querySelectorAll('.gc').forEach(card=>{
+        card.classList.toggle('hide',c!=='All'&&card.dataset.cat!==c);
+      });
+    });
+    filters.appendChild(b);
+  });
+  const grid=document.getElementById('glGrid');
+  GLOSS.forEach(g=>{
+    const card=document.createElement('div');
+    card.className='gc reveal';
+    card.dataset.cat=g.cat;
+    card.innerHTML=`<div class="gc-w">${g.w}</div>
+      <div class="gc-ph">${g.ph}</div>
+      <div class="gc-d">${g.d}</div>
+      <span class="gc-cat">${g.cat}</span>`;
+    grid.appendChild(card);
+  });
+}
+
+/* ── QUICK QUESTIONS ── */
+function buildQQ(){
+  const list=document.getElementById('qqList');
+  QQ.forEach(q=>{
+    const btn=document.createElement('button');
+    btn.className='qq-btn';
+    btn.innerHTML=`<span class="qq-ico">${q.ico}</span>${q.t}`;
+    btn.addEventListener('click',()=>{
+      document.getElementById('chatIn').value=q.t;
+      sendMsg();
+    });
+    list.appendChild(btn);
+  });
+}
+
+/* ── CHAT / AI ── */
+let apiKey='';
+let chatHistory=[];
+
+// Restore saved key
+try{
+  const saved=localStorage.getItem('elected_key');
+  if(saved&&saved.length>10){apiKey=saved;showConnected();}
+}catch(e){}
+
+document.getElementById('keyBtn').addEventListener('click',()=>{
+  const val=document.getElementById('keyInp').value.trim();
+  const err=document.getElementById('keyErr');
+  if(!val||val.length<10){
+    err.textContent='Please enter a valid API key.';
+    err.classList.add('on');
+    return;
+  }
+  apiKey=val;
+  try{localStorage.setItem('elected_key',val);}catch(e){}
+  err.classList.remove('on');
+  showConnected();
+});
+
+function showConnected(){
+  document.getElementById('keyBox').innerHTML=`
+    <strong style="color:var(--gold)">✓ API Key Connected</strong><br/>
+    <span style="font-size:.74rem;color:var(--tx2)">AI assistant is active. Ask anything about elections!</span>
+    <div style="margin-top:9px">
+      <button class="key-btn" style="background:var(--red)" onclick="apiKey='';try{localStorage.removeItem('elected_key')}catch(e){};location.reload()">Disconnect</button>
+    </div>`;
+}
+
+function escHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function addMsg(role,text){
+  const c=document.getElementById('chatMsgs');
+  const now=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  const el=document.createElement('div');
+  el.className='m '+(role==='user'?'u':'a');
+  const html=escHtml(text).replace(/\n\n/g,'</p><p style="margin-top:.5em">').replace(/\n/g,'<br/>');
+  el.innerHTML=`<div class="m-bub"><p>${html}</p></div><div class="m-t">${now}</div>`;
+  c.appendChild(el);
+  c.scrollTop=c.scrollHeight;
+}
+
+function addTyping(){
+  const c=document.getElementById('chatMsgs');
+  const el=document.createElement('div');
+  el.className='m a';el.id='tmsg';
+  el.innerHTML=`<div class="m-bub"><div class="typing"><span></span><span></span><span></span></div></div>`;
+  c.appendChild(el);
+  c.scrollTop=c.scrollHeight;
+}
+function rmTyping(){const e=document.getElementById('tmsg');if(e)e.remove();}
+
+async function sendMsg(){
+  const inp=document.getElementById('chatIn');
+  const send=document.getElementById('chatSend');
+  const text=inp.value.trim();
+  if(!text)return;
+  inp.value='';inp.style.height='auto';
+  addMsg('user',text);
+  chatHistory.push({role:'user',content:text});
+
+  if(!apiKey){
+    addMsg('assistant',"I'd love to help! Please enter your Anthropic API key in the panel on the right to activate the AI assistant. You can get one free at console.anthropic.com");
+    return;
+  }
+
+  send.disabled=true;
+  addTyping();
+
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key':apiKey,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1024,
+        system:`You are ElectEd, a knowledgeable and friendly AI assistant specializing in election processes, voting rights, democratic systems, and civic education. Help users understand how elections work from voter registration through certification of results.
+
+Be informative, accurate, and engaging. Use clear language accessible to general audiences. When relevant, distinguish between U.S.-specific information and international practices. Encourage civic participation. Keep responses concise but thorough — 2 to 3 paragraphs typically. Use plain prose without excessive markdown formatting.`,
+        messages:chatHistory
+      })
+    });
+
+    rmTyping();
+
+    if(!res.ok){
+      let errMsg=`HTTP ${res.status}`;
+      try{const d=await res.json();errMsg=d?.error?.message||errMsg;}catch(e){}
+      const hint=res.status===401?'\n\nYour API key appears invalid or expired. Please check and re-enter it.':
+                 res.status===429?'\n\nRate limit reached. Please wait a moment and try again.':
+                 res.status===500?'\n\nThe API had an internal error. Please try again.':'';
+      addMsg('assistant',`Error ${res.status}: ${errMsg}${hint}`);
+      chatHistory.pop();
+    } else {
+      const data=await res.json();
+      const reply=data?.content?.[0]?.text||'Sorry, I received an empty response. Please try again.';
+      chatHistory.push({role:'assistant',content:reply});
+      addMsg('assistant',reply);
+    }
+  }catch(err){
+    rmTyping();
+    addMsg('assistant',`Connection failed: ${err.message}\n\nCheck your internet connection and try again. If the issue persists, your browser may be blocking cross-origin requests.`);
+    chatHistory.pop();
+  }
+  send.disabled=false;
+}
+
+document.getElementById('chatSend').addEventListener('click',sendMsg);
+document.getElementById('chatIn').addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}
+});
+document.getElementById('chatIn').addEventListener('input',function(){
+  this.style.height='auto';
+  this.style.height=Math.min(this.scrollHeight,110)+'px';
+});
+
+/* ── SCROLL REVEAL ── */
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('revealed');});
+},{threshold:0.08});
+
+function initReveal(){
+  document.querySelectorAll('.reveal').forEach((el,i)=>{
+    el.style.transitionDelay=(i%6)*0.06+'s';
+    observer.observe(el);
+  });
+}
+
+/* ── INIT ── */
+buildTimeline();
+buildProcess();
+buildGlossary();
+buildQQ();
+renderQ();
+setTimeout(initReveal,100);
+
+// Welcome
+setTimeout(()=>{
+  addMsg('assistant',"Hello! I'm ElectEd — your AI guide to the democratic process.\n\nI can answer questions about voter registration, how primaries work, the Electoral College, your voting rights, how ballots are counted, and much more.\n\nWhat would you like to know about elections today?");
+},350);
+</script>
+</body>
+</html>
