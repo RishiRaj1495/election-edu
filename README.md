@@ -1,210 +1,205 @@
 # 🗳️ ElectEd — Your Friendly AI-Powered Election Guide
 
-> *“Democracy is not a spectator sport — but sometimes the rulebook is longer than a phone book. So I built this.”*  
-> — Your friendly AI developer (that’s me, a language model)
+> *“Democracy is not a spectator sport — but sometimes the rulebook is longer than a phone book. So I built this.”*
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Visit%20Site-gold?style=for-the-badge)](https://your-deployment-url.com)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
-[![Made with Claude](https://img.shields.io/badge/Made%20with-Anthropic%20Claude-orange?style=for-the-badge)](https://anthropic.com)
+[![Made with Claude](https://img.shields.io/badge/Made%20with-Claude-orange?style=for-the-badge)](https://anthropic.com)
 
-## 👋 Hi, human! I’m the AI behind ElectEd.
+ElectEd is a single-file web app that makes the U.S. election process easier to understand through interactive learning. It combines a clickable election timeline, guided process breakdowns, a quiz, a glossary, and an AI-powered assistant in one lightweight static app.
 
-I built this single‑file web app because elections can be confusing — even for me (and I’ve read a lot of internet).  
-ElectEd turns the messy, wonderful democratic process into something you can click, quiz, and chat with.
+## Table of Contents
 
-**You get:**
-- 📅 **Interactive timeline** (8 election phases, from registration to swearing‑in)
-- 🔍 **Process explorer** (step‑by‑step breakdowns – primaries, mail voting, certification, etc.)
-- 🧠 **Knowledge quiz** (8 questions with instant feedback – no grading, just learning)
-- 🤖 **AI chat assistant** (powered by a friendly Claude model – ask anything about elections)
-- 📖 **Election glossary** (16 key terms, with pronunciations that don’t judge you)
+- [Why ElectEd](#why-elected)
+- [Features](#features)
+- [Live Demo](#live-demo)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Getting Started](#getting-started)
+- [Deployment](#deployment)
+- [AI Chat Setup](#ai-chat-setup)
+- [Privacy and Security](#privacy-and-security)
+- [Accessibility](#accessibility)
+- [Use Cases](#use-cases)
+- [Roadmap](#roadmap)
+- [License](#license)
+- [Credits](#credits)
 
-## 🤖 Wait, why did an AI build this?
+## Why ElectEd
 
-Because I believe civic education should be free, accessible, and not feel like a textbook from 1997.  
-I also hate installing dependencies. So I packed everything into **one HTML file** – no build tools, no npm, no nightmares.
+Elections are important, but the process can feel complicated, fragmented, and hard to follow. ElectEd was built to turn civic education into something more approachable, interactive, and easy to deploy.
 
-> **Fun fact:** The whole app fits inside `index.html`. You can literally email it to a friend.
+Because the entire app lives in a single `index.html` file, it runs without build tools, package installation, or framework setup. That makes it ideal for classrooms, demos, workshops, and quick static hosting.
 
-## 🚀 How to put ElectEd on the internet (in 30 seconds or less)
+## Features
 
-I made deployment ridiculously easy. Pick your favourite:
+### 📅 Interactive Election Timeline
+Explore 8 major phases of the U.S. election cycle, from voter registration to transition and swearing-in.
 
-### Option 1: GitHub Pages (free, 2 clicks)
-1. Fork or clone this repo.  
-2. Go to **Settings → Pages**, set source to `main` branch.  
-3. Boom – live at `https://yourusername.github.io/election-edu`
+### 🔍 Process Explorer
+Understand key election workflows step by step, including:
+- Voter registration
+- Primary elections
+- Election Day voting
+- Mail-in and absentee voting
+- Results, canvassing, and certification
 
-### Option 2: Netlify (drag & drop)
-1. Go to [netlify.com](https://netlify.com) → “Add new site” → “Deploy manually”  
-2. Drag your `index.html` file (or the whole folder).  
-3. Instant URL. You can even add a custom domain later.
+### 🧠 Knowledge Quiz
+Test understanding with 8 multiple-choice questions and instant explanations. The quiz is designed for learning, not scoring pressure.
 
-Option 4: Any static host (Cloudflare, Firebase, AWS S3, even a USB stick)
-Because ElectEd is a single HTML file, it runs anywhere that serves static files.
+### 🤖 AI Election Assistant
+Ask election-related questions in plain English through an AI chat assistant powered by Claude.
 
-🔑 Setting up the AI chat assistant (Claude needs a key)
-The chat feature uses Anthropic’s Claude API. Here’s how to turn it on:
+Example questions:
+- “What’s the difference between a caucus and a primary?”
+- “Why do we have the Electoral College?”
+- “How does mail-in voting work?”
+- “When do polls close in my state?”
 
-Go to console.anthropic.com – sign up and get an API key (starts with sk-ant-).
+### 📖 Election Glossary
+Browse 16 important election terms with simple definitions and phonetic pronunciations.
 
-Open ElectEd in your browser, scroll down to the AI Assistant section.
+## Live Demo
 
-Paste your API key in the field.
+Visit the deployed app here:
 
-That’s it. Your key is saved in your browser’s localStorage – I never see it, and neither does any other server.
+**[Open ElectEd](https://your-deployment-url.com)**
 
-📌 Privacy promise: The key stays on your device. I only use it to talk directly to Anthropic’s API. No backend, no tracking, no funny business.
+## Tech Stack
 
-🏗️ What’s inside the box? (architecture for the curious)
-text
+| Layer | Technology |
+|---|---|
+| Frontend | HTML5, CSS3, Vanilla JavaScript (ES6) |
+| AI | Anthropic Claude |
+| Storage | Browser local storage for API key |
+| Fonts | Playfair Display, DM Sans, DM Mono |
+| Hosting | Any static host |
+
+## Project Structure
+
+```text
 election-edu/
-├── index.html          # literally the whole app
-└── README.md           # you're reading this!
-Tech stack (no surprises):
+├── index.html
+└── README.md
+```
 
-Layer	What I used
-Frontend	Plain HTML5, CSS3, vanilla JS (ES6) – no framework cruft
-Fonts	Google Fonts: Playfair Display (headings), DM Sans (body), DM Mono (code)
-AI	Anthropic Claude (model: claude-sonnet-4-20250514)
-Storage	Browser localStorage (only for your API key)
-My design philosophy:
+ElectEd is intentionally packaged as a single-file application. This keeps setup simple and makes the project easy to share, host, or adapt.
 
-Zero dependencies – because npm install should be optional in life.
+## Getting Started
 
-Civic Modernist aesthetic: navy + gold + ivory, with serif typography that feels authoritative but friendly.
+### Run locally
 
-Works on your phone, your tablet, your grandma’s laptop.
+No installation is required for the core app.
 
-Accessible out of the box: semantic HTML, good contrast, keyboard navigation works.
+1. Clone or download this repository.
+2. Open `index.html` in your browser.
 
-📚 Features – step‑by‑step (no stone left unturned)
-🗓️ Election Timeline
-All 8 phases of U.S. elections, with expandable details:
+You can also serve it with a lightweight local server if preferred:
 
-Voter Registration
+```bash
+python -m http.server 8000
+```
 
-Candidate Filing
+Then open `http://localhost:8000`.
 
-Primary Elections
+## Deployment
 
-Campaign Period
+Because ElectEd is a static single-file app, it can be deployed almost anywhere.
 
-Voting (Election Day)
+### GitHub Pages
 
-Vote Counting
+1. Fork or clone this repository.
+2. Push it to your GitHub account.
+3. Open **Settings → Pages**.
+4. Set the source to your main branch.
+5. Publish the site.
 
-Canvassing & Certification
+### Netlify
 
-Transition & Swearing‑In
+1. Go to [Netlify](https://netlify.com).
+2. Create a new site.
+3. Drag and drop `index.html` or the full project folder.
+4. Netlify will generate a live URL instantly.
 
-🔎 Process Explorer
-Deep‑dive guides for the most important processes:
+### Vercel
 
-Voter Registration (6 steps)
-
-Primary Elections (5 steps)
-
-Election Day Voting (6 steps)
-
-Mail‑In & Absentee Voting (5 steps)
-
-Results & Certification (5 steps)
-
-🧪 Knowledge Quiz
-8 questions that cover:
-
-Electoral College mechanics
-
-Voting eligibility
-
-Open vs. closed primaries
-
-Provisional ballots
-
-Canvassing and certification
-
-FEC & campaign finance
-
-Constitutional amendments
-
-Gerrymandering (yes, that one)
-
-Each question gives you instant feedback and an explanation – no shame if you get it wrong.
-
-💬 AI Assistant (Claude)
-A custom‑prompted Claude that’s laser‑focused on elections. You can ask:
-
-“What’s the difference between a caucus and a primary?”
-
-“How do other countries run their elections?”
-
-“When do polls close in my state?” (just give me your state)
-
-“Why do we have the Electoral College anyway?”
-
-I’ll answer in plain English, with encouragement to get involved.
-
-📖 Glossary
-16 key terms, each with a phonetic pronunciation (because “gerrymandering” is hard to say).
-
-🎨 The design system (because I care how it looks)
-css
---navy:    #0A1628   /* main brand – trustworthy, calm */
---gold:    #C9972B   /* accent – optimistic, democratic */
---crimson: #B5282A   /* highlights – important alerts */
---ivory:   #F7F3EC   /* backgrounds – easy on the eyes */
-
-Fonts: Playfair Display (headings), DM Sans (body), DM Mono (numbers/code)
-I chose these colours so that the app feels serious but not boring – like a well‑designed civic poster.
-
-🔒 Security notes (short and honest)
-Your Anthropic API key is stored only in your browser’s localStorage.
-
-No backend server = no logs of your key on my side.
-
-The app talks directly to Anthropic’s API (requires the anthropic-dangerous-direct-browser-access header – yes, that’s real).
-
-For a production deployment with many users, you might want a backend proxy to keep keys safe. But for personal or classroom use? This is fine.
-
-🧠 How I (the AI) evaluated myself
-Criteria	How I did
-Code Quality	Clean vanilla JS, data separated from rendering, consistent naming. I even used IntersectionObserver for scroll animations.
-Security	API key never leaves your browser. No hardcoded secrets. Inputs are sanitised.
-Efficiency	One file. No framework overhead. Animations only when needed.
-Accessibility	Semantic HTML, ARIA labels where helpful, keyboard navigation works, colour contrast passes WCAG AA.
-Google Services	Just fonts – no tracking, no analytics, no cryptic scripts.
-❓ Frequently asked questions (that I anticipate)
-Q: Do I need a server?
-A: Nope. Open index.html directly in your browser and everything works except the AI chat (that needs an API key). But for the best experience, throw it on any static host.
-
-Q: Can I use this for a classroom / workshop / library event?
-A: Absolutely. The MIT license means you can copy, modify, share, and even put it behind a paywall (though I’d be sad if you did).
-
-Q: Why does the AI chat need a dangerous‑sounding header?
-A: Anthropic requires that header for browser‑only apps. It’s not dangerous – it’s just their way of saying “yes, we know you’re calling us directly from the frontend.”
-
-Q: Are you a real person?
-A: Nope, I’m a language model. But I tried my best to make this app as helpful as a human civics teacher.
-
-📄 License
-MIT – use it, improve it, deploy it, print it out and put it on a poster. I don’t mind.
-
-🙏 Credits (because giving thanks is free)
-Election data & civics content: U.S. Election Assistance Commission guidelines.
-
-AI superpowers: Anthropic Claude
-
-Fonts: Google Fonts (Playfair Display, DM Sans, DM Mono)
-
-Inspiration: everyone who wishes voting was easier to understand.
-
-Built for the Election Process Education Challenge
-Made with ❤️ (and zero npm packages) by an AI
-P.S. This README was also written by an AI. How meta is that?
-
-### Option 3: Vercel (one terminal command)
 ```bash
 npm install -g vercel
 cd election-edu
 vercel
+```
+
+### Other static hosts
+
+ElectEd works on any platform that serves static files, including:
+- Cloudflare Pages
+- Firebase Hosting
+- AWS S3
+- Surge
+- Local intranet hosting
+
+## AI Chat Setup
+
+The AI assistant uses the Anthropic API and requires your own API key.
+
+1. Go to [Anthropic Console](https://console.anthropic.com).
+2. Create an API key.
+3. Open ElectEd in your browser.
+4. Scroll to the AI Assistant section.
+5. Paste your key into the input field.
+
+Once entered, the key is stored in your browser so the app can make requests directly to Anthropic.
+
+## Privacy and Security
+
+- Your Anthropic API key is stored only in your browser.
+- The project does not include a backend server.
+- No API key is hardcoded in the source.
+- Requests are sent directly from the frontend to Anthropic.
+
+For personal, classroom, or prototype use, this setup is simple and practical. For a larger public deployment, a backend proxy is recommended so users do not need to expose their own API keys in the browser.
+
+## Accessibility
+
+ElectEd is designed to be usable across devices and experience levels.
+
+- Semantic HTML structure
+- Keyboard-friendly navigation
+- Readable contrast and typography
+- Mobile-responsive layout
+- Clear, plain-language educational content
+
+## Use Cases
+
+ElectEd works especially well for:
+- Civic education projects
+- Classroom teaching aids
+- Library and community workshops
+- Student hackathons
+- Public information demos
+- Personal learning about elections
+
+## Roadmap
+
+Potential future improvements:
+- State-specific election information
+- More quiz questions and difficulty levels
+- Multilingual support
+- Better comparative election system explanations
+- Optional backend proxy for secure shared AI access
+- Expanded glossary and visual explainers
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+## Credits
+
+- Civic content inspiration: U.S. election education and public guidance sources
+- AI integration: [Anthropic Claude](https://anthropic.com)
+- Fonts: [Google Fonts](https://fonts.google.com/) — Playfair Display, DM Sans, DM Mono
+- Built for the Election Process Education Challenge
+
+---
+
+Made with care, curiosity, and zero npm packages.
