@@ -4,7 +4,7 @@
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Visit%20Site-gold?style=for-the-badge)](https://your-deployment-url.com)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
-[![Made with Claude](https://img.shields.io/badge/Made%20with-Claude-orange?style=for-the-badge)](https://anthropic.com)
+[![Made with AI](https://img.shields.io/badge/Made%20with-AI-orange?style=for-the-badge)](#)
 
 ElectEd is a single-file web app that makes the U.S. election process easier to understand through interactive learning. It combines a clickable election timeline, guided process breakdowns, a quiz, a glossary, and an AI-powered assistant in one lightweight static app.
 
@@ -48,7 +48,7 @@ Understand key election workflows step by step, including:
 Test understanding with 8 multiple-choice questions and instant explanations. The quiz is designed for learning, not scoring pressure.
 
 ### 🤖 AI Election Assistant
-Ask election-related questions in plain English through an AI chat assistant powered by Claude.
+Ask election-related questions in plain English through an AI chat assistant.
 
 Example questions:
 - “What’s the difference between a caucus and a primary?”
@@ -70,7 +70,7 @@ Visit the deployed app here:
 | Layer | Technology |
 |---|---|
 | Frontend | HTML5, CSS3, Vanilla JavaScript (ES6) |
-| AI | Anthropic Claude |
+| AI | AI chat assistant |
 | Storage | Browser local storage for API key |
 | Fonts | Playfair Display, DM Sans, DM Mono |
 | Hosting | Any static host |
@@ -140,22 +140,22 @@ ElectEd works on any platform that serves static files, including:
 
 ## AI Chat Setup
 
-The AI assistant uses the Anthropic API and requires your own API key.
+The AI assistant uses an external API and requires your own API key.
 
-1. Go to [Anthropic Console](https://console.anthropic.com).
+1. Go to your API provider dashboard.
 2. Create an API key.
 3. Open ElectEd in your browser.
 4. Scroll to the AI Assistant section.
 5. Paste your key into the input field.
 
-Once entered, the key is stored in your browser so the app can make requests directly to Anthropic.
+Once entered, the key is stored in your browser so the app can make requests directly from the frontend.
 
 ## Privacy and Security
 
-- Your Anthropic API key is stored only in your browser.
+- Your API key is stored only in your browser.
 - The project does not include a backend server.
 - No API key is hardcoded in the source.
-- Requests are sent directly from the frontend to Anthropic.
+- Requests are sent directly from the frontend.
 
 For personal, classroom, or prototype use, this setup is simple and practical. For a larger public deployment, a backend proxy is recommended so users do not need to expose their own API keys in the browser.
 
@@ -196,7 +196,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ## Credits
 
 - Civic content inspiration: U.S. election education and public guidance sources
-- AI integration: [Anthropic Claude](https://anthropic.com)
+- AI integration: AI chat assistant
 - Fonts: [Google Fonts](https://fonts.google.com/) — Playfair Display, DM Sans, DM Mono
 - Built for the Election Process Education Challenge
 
