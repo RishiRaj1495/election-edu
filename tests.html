@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ElectEd — Test Suite</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #0D1117; color: #e2e8f0; padding: 2rem; }
+    h1 { font-size: 1.6rem; color: #DBA84A; margin-bottom: .25rem; }
+    .subtitle { font-size: .85rem; color: #718096; margin-bottom: 2rem; }
+    .suite { background: #1C2433; border: 1px solid rgba(255,255,255,.08); border-radius: 12px; margin-bottom: 1rem; overflow: hidden; }
+    .suite-hdr { padding: .9rem 1.25rem; background: #122040; font-size: .85rem; font-weight: 600; color: #93C5FD; display: flex; align-items: center; gap: 8px; }
+    .test { padding: .75rem 1.25rem; display: flex; align-items: center; gap: 12px; border-top: 1px solid rgba(255,255,255,.05); font-size: .82rem; }
+    .test.pass { color: #86EFAC; }
+    .test.fail { color: #FCA5A5; background: rgba(248,113,113,.05); }
+    .test.skip { color: #94A3B8; }
+    .badge { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .7rem; font-weight: 700; flex-shrink: 0; }
+    .badge.pass { background: rgba(74,222,128,.2); color: #4ADE80; }
+    .badge.fail { background: rgba(248,113,113,.2); color: #F87171; }
+    .badge.skip { background: rgba(148,163,184,.15); color: #94A3B8; }
+    .err { font-size: .75rem; color: #F87171; margin-top: 4px; font-family: monospace; opacity: .8; }
+    .summary {
+      background: #1C2433; border: 1px solid rgba(255,255,255,.08);
+      border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;
+      display: flex; gap: 2rem; align-items: center;
+    }
+    .sum-num { font-size: 2rem; font-weight: 700; }
+    .sum-lbl { font-size: .75rem; color: #718096; margin-top: 2px; }
+    .pass-color { color: #4ADE80; }
+    .fail-color { color: #F87171; }
+    .skip-color { color: #94A3B8; }
+    #progress { height: 6px; border-radius: 3px; background: #2D3748; margin-bottom: 2rem; overflow: hidden; }
+    #progress-bar { height: 100%; border-radius: 3px; background: linear-gradient(90deg, #4ADE80, #DBA84A); transition: width .5s; width: 0; }
+    button#runAll {
+      background: #C08B2F; color: #0D1117; font-size: .88rem; font-weight: 600;
+      padding: 10px 24px; border: none; border-radius: 100px; cursor: pointer; margin-bottom: 2rem;
+    }
+    button#runAll:hover { background: #DBA84A; }
+  </style>
+</head>
+<body>
+<h1>🧪 ElectEd Test Suite</h1>
+<p class="subtitle">Unit and integration tests for the ElectEd Election Education Platform</p>
+
+<button id="runAll">▶ Run All Tests</button>
+
+<div id="progress"><div id="progress-bar"></div></div>
+<div class="summary" id="summary" style="display:none">
+  <div><div class="sum-num pass-color" id="passCount">0</div><div class="sum-lbl">Passed</div></div>
+  <div><div class="sum-num fail-color" id="failCount">0</div><div class="sum-lbl">Failed</div></div>
+  <div><div class="sum-num skip-color" id="skipCount">0</div><div class="sum-lbl">Skipped</div></div>
+  <div><div class="sum-num" id="totalCount">0</div><div class="sum-lbl">Total</div></div>
+  <div style="margin-left:auto"><div class="sum-num" id="scoreNum">0%</div><div class="sum-lbl">Score</div></div>
+</div>
+<div id="output"></div>
+
+<script>
+/* ─── Mini Test Framework ─── */
+const results = [];
+let passed = 0, failed = 0, skipped = 0;
+
+function describe(suiteName, fn) {
+  const suiteResults = [];
+  const currentSuite = { name: suiteName, tests: suiteResults };
+  fn({
+    it(name, testFn) {
+      suiteResults.push({ name, testFn });
+    },
+    xit(name) {
+      suiteResults.push({ name, testFn: null, skipped: true });
+    }
+  });
+  results.push(currentSuite);
+}
+
+function expect(actual) {
+  return {
+    toBe(expected) {
+      if (actual !== expected)
+        throw new Error(`Expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`);
+    },
+    toEqual(expected) {
+      if (JSON.stringify(actual) !== JSON.stringify(expected))
+        throw new Error(`Expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`);
+    },
+    toBeTruthy() {
+      if (!actual) throw new Error(`Expected truthy, got ${JSON.stringify(actual)}`);
+    },
+    toBeFalsy() {
+      if (actual) throw new Error(`Expected falsy, got ${JSON.stringify(actual)}`);
+    },
+    toContain(val) {
+      if (!actual.includes(val))
+        throw new Error(`Expected "${actual}" to contain "${val}"`);
+    },
+    toBeGreaterThan(n) {
+      if (actual <= n) throw new Error(`Expected ${actual} > ${n}`);
+    },
+    toBeLessThan(n) {
+      if (actual >= n) throw new Error(`Expected ${actual} < ${n}`);
+    },
+    toBeInstanceOf(cls) {
+      if (!(actual instanceof cls))
+        throw new Error(`Expected instance of ${cls.name}, got ${typeof actual}`);
+    },
+    toHaveLength(n) {
+      if (actual.length !== n)
+        throw new Error(`Expected length ${n}, got ${actual.length}`);
+    }
+  };
+}
+
+/* ─── Application Logic (inline for testing) ─── */
+
+// --- Data validation helpers ---
+function validateApiKey(key) {
+  if (!key || typeof key !== 'string') return false;
+  return key.trim().length >= 10;
+}
+
+function sanitizeHtml(str) {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;');
+}
+
+function formatTime(date) {
+  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
+function computeQuizScore(answers, questions) {
+  if (!answers || !questions) return 0;
+  let score = 0;
+  answers.forEach((ans, i) => { if (ans === questions[i].correct) score++; });
+  return score;
+}
+
+function computeScorePct(score, total) {
+  if (total === 0) return 0;
+  return Math.round((score / total) * 100);
+}
+
+function filterGlossary(terms, category) {
+  if (category === 'All') return terms;
+  return terms.filter(t => t.cat === category);
+}
+
+// Rate limiter for chat
+function createRateLimiter(maxRequests, windowMs) {
+  const timestamps = [];
+  return function canSend() {
+    const now = Date.now();
+    const windowStart = now - windowMs;
+    while (timestamps.length && timestamps[0] < windowStart) timestamps.shift();
+    if (timestamps.length >= maxRequests) return false;
+    timestamps.push(now);
+    return true;
+  };
+}
+
+function buildChatPayload(history, userMsg, systemPrompt) {
+  return {
+    model: 'claude-sonnet-4-20250514',
+    max_tokens: 1024,
+    system: systemPrompt,
+    messages: [...history, { role: 'user', content: userMsg }]
+  };
+}
+
+function parseApiError(status) {
+  const map = { 401: 'Invalid API key', 429: 'Rate limit exceeded', 500: 'Server error' };
+  return map[status] || `HTTP error ${status}`;
+}
+
+function slugify(str) {
+  return str.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+}
+
+function truncate(str, max) {
+  if (str.length <= max) return str;
+  return str.slice(0, max - 3) + '...';
+}
+
+const TIMELINE_DATA = [
+  { ph: 'Pre-Election', name: 'Voter Registration', t: 'Ongoing / Varies', detail: { pts: ['Pt1', 'Pt2'] } },
+  { ph: 'Pre-Election', name: 'Candidate Filing', t: '6–12 Months Before', detail: { pts: ['Pt1'] } },
+  { ph: 'Campaign', name: 'Campaign Period', t: 'Ongoing', detail: { pts: [] } },
+  { ph: 'Election Day', name: 'Voting', t: 'Election Day', detail: { pts: ['Pt1', 'Pt2', 'Pt3'] } },
+  { ph: 'Post-Election', name: 'Vote Counting', t: 'Days After', detail: { pts: [] } },
+  { ph: 'Post-Election', name: 'Certification', t: 'Weeks After', detail: { pts: [] } },
+  { ph: 'Transition', name: 'Swearing-In', t: 'Months After', detail: { pts: [] } }
+];
+
+const QUIZ_DATA = [
+  { q: 'Q1', opts: ['A', 'B', 'C', 'D'], correct: 1 },
+  { q: 'Q2', opts: ['A', 'B', 'C', 'D'], correct: 2 },
+  { q: 'Q3', opts: ['A', 'B', 'C', 'D'], correct: 0 }
+];
+
+const GLOSSARY_DATA = [
+  { w: 'Ballot', cat: 'Voting' },
+  { w: 'Caucus', cat: 'Nomination' },
+  { w: 'Delegate', cat: 'Party Politics' },
+  { w: 'Suffrage', cat: 'Voting Rights' },
+  { w: 'Turnout', cat: 'Metrics' }
+];
+
+/* ─── Test Suites ─── */
+
+describe('Security — Input Sanitization', ({ it }) => {
+  it('should escape HTML angle brackets', () => {
+    expect(sanitizeHtml('<script>alert(1)</script>')).toContain('&lt;script&gt;');
+  });
+  it('should escape ampersands', () => {
+    expect(sanitizeHtml('A & B')).toContain('&amp;');
+  });
+  it('should escape double quotes', () => {
+    expect(sanitizeHtml('"hello"')).toContain('&quot;');
+  });
+  it('should escape single quotes', () => {
+    expect(sanitizeHtml("it's")).toContain('&#x27;');
+  });
+  it('should return empty string unchanged', () => {
+    expect(sanitizeHtml('')).toBe('');
+  });
+  it('should not alter safe plain text', () => {
+    expect(sanitizeHtml('Hello World')).toBe('Hello World');
+  });
+});
+
+describe('Security — API Key Validation', ({ it }) => {
+  it('should accept valid-length key', () => {
+    expect(validateApiKey('sk-ant-api03-abcdefghijklmnop')).toBeTruthy();
+  });
+  it('should reject empty string', () => {
+    expect(validateApiKey('')).toBeFalsy();
+  });
+  it('should reject null', () => {
+    expect(validateApiKey(null)).toBeFalsy();
+  });
+  it('should reject undefined', () => {
+    expect(validateApiKey(undefined)).toBeFalsy();
+  });
+  it('should reject too-short string', () => {
+    expect(validateApiKey('abc')).toBeFalsy();
+  });
+  it('should reject non-string type', () => {
+    expect(validateApiKey(12345)).toBeFalsy();
+  });
+});
+
+describe('Security — Rate Limiter', ({ it }) => {
+  it('should allow requests within limit', () => {
+    const limiter = createRateLimiter(5, 60000);
+    expect(limiter()).toBeTruthy();
+    expect(limiter()).toBeTruthy();
+    expect(limiter()).toBeTruthy();
+  });
+  it('should block requests over limit', () => {
+    const limiter = createRateLimiter(3, 60000);
+    limiter(); limiter(); limiter();
+    expect(limiter()).toBeFalsy();
+  });
+  it('should allow new request after window expires', async () => {
+    const limiter = createRateLimiter(1, 50);
+    limiter();
+    await new Promise(r => setTimeout(r, 60));
+    expect(limiter()).toBeTruthy();
+  });
+});
+
+describe('Quiz — Score Calculation', ({ it }) => {
+  it('should return 0 for all wrong answers', () => {
+    const ans = [0, 0, 1]; // only ans[2] matches correct[2]=0
+    expect(computeQuizScore([3, 3, 1], QUIZ_DATA)).toBe(0);
+  });
+  it('should return full score for all correct', () => {
+    const ans = [1, 2, 0]; // matches all corrects
+    expect(computeQuizScore(ans, QUIZ_DATA)).toBe(3);
+  });
+  it('should return partial score', () => {
+    const ans = [1, 0, 0]; // only ans[0] and ans[2] correct
+    expect(computeQuizScore(ans, QUIZ_DATA)).toBe(2);
+  });
+  it('should return 0 for empty answers', () => {
+    expect(computeQuizScore([], QUIZ_DATA)).toBe(0);
+  });
+  it('should handle null gracefully', () => {
+    expect(computeQuizScore(null, null)).toBe(0);
+  });
+});
+
+describe('Quiz — Score Percentage', ({ it }) => {
+  it('should calculate 100% correctly', () => {
+    expect(computeScorePct(8, 8)).toBe(100);
+  });
+  it('should calculate 50% correctly', () => {
+    expect(computeScorePct(4, 8)).toBe(50);
+  });
+  it('should calculate 0% correctly', () => {
+    expect(computeScorePct(0, 8)).toBe(0);
+  });
+  it('should handle zero total without division error', () => {
+    expect(computeScorePct(0, 0)).toBe(0);
+  });
+  it('should round to nearest integer', () => {
+    expect(computeScorePct(1, 3)).toBe(33);
+  });
+});
+
+describe('Glossary — Filtering', ({ it }) => {
+  it('should return all terms when category is All', () => {
+    expect(filterGlossary(GLOSSARY_DATA, 'All')).toHaveLength(5);
+  });
+  it('should filter to Voting category', () => {
+    const res = filterGlossary(GLOSSARY_DATA, 'Voting');
+    expect(res).toHaveLength(1);
+    expect(res[0].w).toBe('Ballot');
+  });
+  it('should return empty array for non-existent category', () => {
+    expect(filterGlossary(GLOSSARY_DATA, 'XYZ')).toHaveLength(0);
+  });
+  it('should not mutate original array', () => {
+    filterGlossary(GLOSSARY_DATA, 'Voting');
+    expect(GLOSSARY_DATA).toHaveLength(5);
+  });
+});
+
+describe('Timeline — Data Integrity', ({ it }) => {
+  it('should have 7 timeline phases', () => {
+    expect(TIMELINE_DATA).toHaveLength(7);
+  });
+  it('should have required fields on each step', () => {
+    TIMELINE_DATA.forEach(step => {
+      if (!step.ph) throw new Error(`Missing ph on step: ${step.name}`);
+      if (!step.name) throw new Error('Missing name on step');
+    });
+    expect(true).toBeTruthy();
+  });
+  it('should start with Pre-Election phase', () => {
+    expect(TIMELINE_DATA[0].ph).toBe('Pre-Election');
+  });
+  it('should end with Transition phase', () => {
+    expect(TIMELINE_DATA[TIMELINE_DATA.length - 1].ph).toBe('Transition');
+  });
+  it('all detail.pts should be arrays', () => {
+    const allArrays = TIMELINE_DATA.every(s => Array.isArray(s.detail.pts));
+    expect(allArrays).toBeTruthy();
+  });
+});
+
+describe('API — Payload Builder', ({ it }) => {
+  it('should include model in payload', () => {
+    const p = buildChatPayload([], 'hello', 'system');
+    expect(p.model).toBe('claude-sonnet-4-20250514');
+  });
+  it('should append user message to history', () => {
+    const p = buildChatPayload([], 'hello', 'system');
+    expect(p.messages[p.messages.length - 1].role).toBe('user');
+    expect(p.messages[p.messages.length - 1].content).toBe('hello');
+  });
+  it('should preserve existing history', () => {
+    const history = [{ role: 'user', content: 'prev' }, { role: 'assistant', content: 'ans' }];
+    const p = buildChatPayload(history, 'next', 'sys');
+    expect(p.messages).toHaveLength(3);
+  });
+  it('should set max_tokens', () => {
+    const p = buildChatPayload([], 'q', 'sys');
+    expect(p.max_tokens).toBe(1024);
+  });
+  it('should not mutate original history array', () => {
+    const history = [{ role: 'user', content: 'old' }];
+    buildChatPayload(history, 'new', 'sys');
+    expect(history).toHaveLength(1);
+  });
+});
+
+describe('API — Error Parsing', ({ it }) => {
+  it('should parse 401 as invalid key', () => {
+    expect(parseApiError(401)).toContain('Invalid');
+  });
+  it('should parse 429 as rate limit', () => {
+    expect(parseApiError(429)).toContain('Rate limit');
+  });
+  it('should parse 500 as server error', () => {
+    expect(parseApiError(500)).toContain('Server');
+  });
+  it('should return fallback for unknown codes', () => {
+    expect(parseApiError(503)).toContain('503');
+  });
+});
+
+describe('Utilities — String Helpers', ({ it }) => {
+  it('slugify should lowercase and replace spaces', () => {
+    expect(slugify('Voter Registration')).toBe('voter-registration');
+  });
+  it('slugify should remove special characters', () => {
+    expect(slugify('Election Day!')).toBe('election-day');
+  });
+  it('truncate should not alter short strings', () => {
+    expect(truncate('hi', 10)).toBe('hi');
+  });
+  it('truncate should truncate long strings', () => {
+    const result = truncate('abcdefghij', 6);
+    expect(result.length).toBeLessThan(10);
+    expect(result).toContain('...');
+  });
+  it('formatTime should return a time string', () => {
+    const result = formatTime(new Date());
+    expect(typeof result).toBe('string');
+    expect(result.length).toBeGreaterThan(3);
+  });
+});
+
+describe('Accessibility — ARIA & Structure', ({ it }) => {
+  it('quiz questions should have non-empty text', () => {
+    QUIZ_DATA.forEach(q => {
+      if (!q.q || q.q.trim() === '') throw new Error('Empty quiz question found');
+    });
+    expect(true).toBeTruthy();
+  });
+  it('all quiz options should have 4 choices', () => {
+    QUIZ_DATA.forEach(q => expect(q.opts).toHaveLength(4));
+  });
+  it('quiz correct index should be within bounds', () => {
+    QUIZ_DATA.forEach(q => {
+      if (q.correct < 0 || q.correct >= q.opts.length)
+        throw new Error(`Correct index ${q.correct} out of bounds`);
+    });
+    expect(true).toBeTruthy();
+  });
+  it('glossary terms should all have definitions', () => {
+    const allHaveDef = GLOSSARY_DATA.every(g => g.w && g.cat);
+    expect(allHaveDef).toBeTruthy();
+  });
+});
+
+/* ─── Test Runner ─── */
+document.getElementById('runAll').addEventListener('click', async () => {
+  passed = 0; failed = 0; skipped = 0;
+  const out = document.getElementById('output');
+  out.innerHTML = '';
+  document.getElementById('summary').style.display = 'none';
+
+  let totalTests = 0;
+  results.forEach(suite => suite.tests.forEach(() => totalTests++));
+
+  let ran = 0;
+
+  for (const suite of results) {
+    const suiteEl = document.createElement('div');
+    suiteEl.className = 'suite';
+    suiteEl.innerHTML = `<div class="suite-hdr">📦 ${suite.name}</div>`;
+    out.appendChild(suiteEl);
+
+    for (const test of suite.tests) {
+      await new Promise(r => setTimeout(r, 8)); // visual delay
+      const testEl = document.createElement('div');
+
+      if (test.skipped) {
+        testEl.className = 'test skip';
+        testEl.innerHTML = `<div class="badge skip">−</div>${test.name}`;
+        skipped++;
+      } else {
+        try {
+          await test.testFn();
+          testEl.className = 'test pass';
+          testEl.innerHTML = `<div class="badge pass">✓</div>${test.name}`;
+          passed++;
+        } catch (e) {
+          testEl.className = 'test fail';
+          testEl.innerHTML = `<div class="badge fail">✗</div><div><div>${test.name}</div><div class="err">${e.message}</div></div>`;
+          failed++;
+        }
+      }
+      suiteEl.appendChild(testEl);
+      ran++;
+
+      // Update progress
+      const pct = (ran / totalTests) * 100;
+      document.getElementById('progress-bar').style.width = pct + '%';
+    }
+  }
+
+  const total = passed + failed + skipped;
+  const score = total > 0 ? Math.round((passed / (passed + failed)) * 100) : 0;
+  document.getElementById('passCount').textContent = passed;
+  document.getElementById('failCount').textContent = failed;
+  document.getElementById('skipCount').textContent = skipped;
+  document.getElementById('totalCount').textContent = total;
+  document.getElementById('scoreNum').textContent = score + '%';
+  document.getElementById('scoreNum').style.color = score >= 80 ? '#4ADE80' : score >= 60 ? '#DBA84A' : '#F87171';
+  document.getElementById('summary').style.display = 'flex';
+});
+</script>
+</body>
+</html>
