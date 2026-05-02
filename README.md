@@ -1,8 +1,6 @@
 # ElectEd — Election Process Education Platform
 
-> An AI-powered, production-grade civic education platform built for the Antigravity × Anthropic challenge.
-
-[![Score](https://img.shields.io/badge/Target%20Score-100%25-gold?style=for-the-badge)]()
+> An AI-powered, production-grade civic education platform built for the Antigravity Election Process Education Challenge.
 [![PWA](https://img.shields.io/badge/PWA-Enabled-green?style=for-the-badge)]()
 [![WCAG](https://img.shields.io/badge/WCAG-2.1%20AA-blue?style=for-the-badge)]()
 [![Firebase](https://img.shields.io/badge/Firebase-Integrated-orange?style=for-the-badge)]()
@@ -23,7 +21,7 @@
 | 🔍 **Process Explorer** | Step-by-step breakdowns for 5 election stages |
 | 🧠 **Knowledge Quiz** | 8-question quiz with instant AI-style feedback |
 | 🏆 **Firebase Leaderboard** | Real-time global score leaderboard via Firestore |
-| 🤖 **AI Chat Assistant** | Powered by Anthropic Claude (claude-sonnet-4) |
+| 🤖 **AI Chat Assistant** | AI-powered assistant answering any election question |
 | 🗺️ **Polling Place Finder** | Google Maps embed for locating polling locations |
 | 📖 **Election Glossary** | 16 key terms with live search + category filters |
 | 🌐 **Google Translate** | 12-language support via Google Translate widget |
@@ -229,4 +227,4 @@ MIT — free to use, modify, and deploy.
 
 ---
 
-*Created by **Rishi** · Built for the Antigravity × Anthropic Election Process Education Challenge · 2026*
+*Created by **Rishi** · Built for the Antigravity Election Process Education Challenge · 2026*
