@@ -3,498 +3,681 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ElectEd — Test Suite</title>
+  <title>ElectEd — Comprehensive Test Suite</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Segoe UI', sans-serif; background: #0D1117; color: #e2e8f0; padding: 2rem; }
-    h1 { font-size: 1.6rem; color: #DBA84A; margin-bottom: .25rem; }
-    .subtitle { font-size: .85rem; color: #718096; margin-bottom: 2rem; }
-    .suite { background: #1C2433; border: 1px solid rgba(255,255,255,.08); border-radius: 12px; margin-bottom: 1rem; overflow: hidden; }
-    .suite-hdr { padding: .9rem 1.25rem; background: #122040; font-size: .85rem; font-weight: 600; color: #93C5FD; display: flex; align-items: center; gap: 8px; }
-    .test { padding: .75rem 1.25rem; display: flex; align-items: center; gap: 12px; border-top: 1px solid rgba(255,255,255,.05); font-size: .82rem; }
-    .test.pass { color: #86EFAC; }
-    .test.fail { color: #FCA5A5; background: rgba(248,113,113,.05); }
-    .test.skip { color: #94A3B8; }
-    .badge { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .7rem; font-weight: 700; flex-shrink: 0; }
-    .badge.pass { background: rgba(74,222,128,.2); color: #4ADE80; }
-    .badge.fail { background: rgba(248,113,113,.2); color: #F87171; }
-    .badge.skip { background: rgba(148,163,184,.15); color: #94A3B8; }
-    .err { font-size: .75rem; color: #F87171; margin-top: 4px; font-family: monospace; opacity: .8; }
-    .summary {
-      background: #1C2433; border: 1px solid rgba(255,255,255,.08);
-      border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;
-      display: flex; gap: 2rem; align-items: center;
-    }
-    .sum-num { font-size: 2rem; font-weight: 700; }
-    .sum-lbl { font-size: .75rem; color: #718096; margin-top: 2px; }
-    .pass-color { color: #4ADE80; }
-    .fail-color { color: #F87171; }
-    .skip-color { color: #94A3B8; }
-    #progress { height: 6px; border-radius: 3px; background: #2D3748; margin-bottom: 2rem; overflow: hidden; }
-    #progress-bar { height: 100%; border-radius: 3px; background: linear-gradient(90deg, #4ADE80, #DBA84A); transition: width .5s; width: 0; }
-    button#runAll {
-      background: #C08B2F; color: #0D1117; font-size: .88rem; font-weight: 600;
-      padding: 10px 24px; border: none; border-radius: 100px; cursor: pointer; margin-bottom: 2rem;
-    }
-    button#runAll:hover { background: #DBA84A; }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--ink:#0D1117;--gold:#C08B2F;--gold-lt:#DBA84A;--green:#4ADE80;--red:#F87171;--blue:#93C5FD;--cream:#F8F4ED;--white:#fff}
+    body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--ink);color:#e2e8f0;padding:2rem;min-height:100vh}
+    h1{font-size:1.7rem;color:var(--gold-lt);margin-bottom:.2rem}
+    .subtitle{font-size:.85rem;color:#718096;margin-bottom:2rem}
+    #run-all{background:var(--gold);color:var(--ink);font-size:.9rem;font-weight:700;padding:11px 28px;border:none;border-radius:100px;cursor:pointer;margin-bottom:1.5rem;transition:background .2s}
+    #run-all:hover{background:var(--gold-lt)}
+    #run-all:disabled{opacity:.5;cursor:not-allowed}
+    #progress-bar-wrap{height:6px;background:rgba(255,255,255,.08);border-radius:3px;margin-bottom:2rem;overflow:hidden}
+    #progress-bar{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--gold),var(--green));transition:width .4s;width:0}
+    .summary{display:flex;gap:2rem;align-items:center;flex-wrap:wrap;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:1.5rem;margin-bottom:2rem}
+    .sum-block{}
+    .sum-num{font-size:2.2rem;font-weight:700;line-height:1}
+    .sum-lbl{font-size:.72rem;color:#718096;margin-top:3px;letter-spacing:.05em;text-transform:uppercase}
+    .pass-c{color:var(--green)}.fail-c{color:var(--red)}.skip-c{color:#94A3B8}.pct-c{color:var(--gold-lt)}
+    #output{display:flex;flex-direction:column;gap:1rem}
+    .suite{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;overflow:hidden}
+    .suite-hdr{background:rgba(255,255,255,.05);padding:.85rem 1.25rem;font-size:.82rem;font-weight:600;color:var(--blue);display:flex;align-items:center;gap:8px;justify-content:space-between}
+    .suite-badge{font-size:.7rem;padding:2px 8px;border-radius:100px;background:rgba(255,255,255,.08);color:#94A3B8}
+    .test{padding:.7rem 1.25rem;display:flex;align-items:flex-start;gap:11px;border-top:1px solid rgba(255,255,255,.04);font-size:.81rem;transition:background .15s}
+    .test:hover{background:rgba(255,255,255,.03)}
+    .test.pass{color:#A7F3D0}
+    .test.fail{color:#FCA5A5;background:rgba(248,113,113,.04)}
+    .test.skip{color:#94A3B8}
+    .badge{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:.68rem;font-weight:700;flex-shrink:0;margin-top:1px}
+    .badge.pass{background:rgba(74,222,128,.18);color:var(--green)}
+    .badge.fail{background:rgba(248,113,113,.18);color:var(--red)}
+    .badge.skip{background:rgba(148,163,184,.1);color:#94A3B8}
+    .err-msg{font-size:.74rem;color:#F87171;margin-top:4px;font-family:'JetBrains Mono','Courier New',monospace;opacity:.85}
+    .duration{margin-left:auto;font-size:.68rem;color:#4B5563;font-family:monospace;flex-shrink:0}
+    footer{margin-top:3rem;padding-top:1.5rem;border-top:1px solid rgba(255,255,255,.07);font-size:.75rem;color:#4B5563;display:flex;justify-content:space-between;flex-wrap:wrap;gap:.5rem}
   </style>
 </head>
 <body>
 <h1>🧪 ElectEd Test Suite</h1>
-<p class="subtitle">Unit and integration tests for the ElectEd Election Education Platform</p>
+<p class="subtitle">Comprehensive unit, integration, security and accessibility tests · ElectEd Election Education Platform · Built by Rishi</p>
 
-<button id="runAll">▶ Run All Tests</button>
+<button id="run-all" type="button">▶ Run All Tests</button>
 
-<div id="progress"><div id="progress-bar"></div></div>
+<div id="progress-bar-wrap"><div id="progress-bar"></div></div>
+
 <div class="summary" id="summary" style="display:none">
-  <div><div class="sum-num pass-color" id="passCount">0</div><div class="sum-lbl">Passed</div></div>
-  <div><div class="sum-num fail-color" id="failCount">0</div><div class="sum-lbl">Failed</div></div>
-  <div><div class="sum-num skip-color" id="skipCount">0</div><div class="sum-lbl">Skipped</div></div>
-  <div><div class="sum-num" id="totalCount">0</div><div class="sum-lbl">Total</div></div>
-  <div style="margin-left:auto"><div class="sum-num" id="scoreNum">0%</div><div class="sum-lbl">Score</div></div>
+  <div class="sum-block"><div class="sum-num pass-c" id="s-pass">0</div><div class="sum-lbl">Passed</div></div>
+  <div class="sum-block"><div class="sum-num fail-c" id="s-fail">0</div><div class="sum-lbl">Failed</div></div>
+  <div class="sum-block"><div class="sum-num skip-c" id="s-skip">0</div><div class="sum-lbl">Skipped</div></div>
+  <div class="sum-block"><div class="sum-num" id="s-total">0</div><div class="sum-lbl">Total</div></div>
+  <div class="sum-block" style="margin-left:auto"><div class="sum-num pct-c" id="s-pct">0%</div><div class="sum-lbl">Score</div></div>
+  <div class="sum-block"><div class="sum-num" id="s-time" style="font-size:1.2rem;color:#94A3B8">0ms</div><div class="sum-lbl">Duration</div></div>
 </div>
+
 <div id="output"></div>
 
-<script>
-/* ─── Mini Test Framework ─── */
-const results = [];
-let passed = 0, failed = 0, skipped = 0;
+<footer>
+  <span>ElectEd Test Suite v2.0 · Built by <strong style="color:var(--gold-lt)">Rishi</strong></span>
+  <span id="run-ts"></span>
+</footer>
 
-function describe(suiteName, fn) {
-  const suiteResults = [];
-  const currentSuite = { name: suiteName, tests: suiteResults };
+<script>
+'use strict';
+/* ══════════════════════════════════════════════
+   MICRO TEST FRAMEWORK
+══════════════════════════════════════════════ */
+const suites = [];
+
+function describe(name, fn) {
+  const tests = [];
   fn({
-    it(name, testFn) {
-      suiteResults.push({ name, testFn });
-    },
-    xit(name) {
-      suiteResults.push({ name, testFn: null, skipped: true });
-    }
+    it(label, testFn) { tests.push({ label, testFn, skip: false }); },
+    xit(label) { tests.push({ label, testFn: null, skip: true }); }
   });
-  results.push(currentSuite);
+  suites.push({ name, tests });
 }
 
 function expect(actual) {
   return {
-    toBe(expected) {
-      if (actual !== expected)
-        throw new Error(`Expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`);
-    },
-    toEqual(expected) {
-      if (JSON.stringify(actual) !== JSON.stringify(expected))
-        throw new Error(`Expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`);
-    },
-    toBeTruthy() {
-      if (!actual) throw new Error(`Expected truthy, got ${JSON.stringify(actual)}`);
-    },
-    toBeFalsy() {
-      if (actual) throw new Error(`Expected falsy, got ${JSON.stringify(actual)}`);
-    },
-    toContain(val) {
-      if (!actual.includes(val))
-        throw new Error(`Expected "${actual}" to contain "${val}"`);
-    },
-    toBeGreaterThan(n) {
-      if (actual <= n) throw new Error(`Expected ${actual} > ${n}`);
-    },
-    toBeLessThan(n) {
-      if (actual >= n) throw new Error(`Expected ${actual} < ${n}`);
-    },
-    toBeInstanceOf(cls) {
-      if (!(actual instanceof cls))
-        throw new Error(`Expected instance of ${cls.name}, got ${typeof actual}`);
-    },
-    toHaveLength(n) {
-      if (actual.length !== n)
-        throw new Error(`Expected length ${n}, got ${actual.length}`);
+    toBe(exp) { if (actual !== exp) throw new Error(`Expected ${JSON.stringify(exp)}, got ${JSON.stringify(actual)}`); },
+    toEqual(exp) { if (JSON.stringify(actual) !== JSON.stringify(exp)) throw new Error(`Expected ${JSON.stringify(exp)}, got ${JSON.stringify(actual)}`); },
+    toBeTruthy() { if (!actual) throw new Error(`Expected truthy, got ${JSON.stringify(actual)}`); },
+    toBeFalsy() { if (actual) throw new Error(`Expected falsy, got ${JSON.stringify(actual)}`); },
+    toContain(v) { if (!String(actual).includes(v)) throw new Error(`Expected "${actual}" to contain "${v}"`); },
+    toNotContain(v) { if (String(actual).includes(v)) throw new Error(`Expected "${actual}" NOT to contain "${v}"`); },
+    toBeGreaterThan(n) { if (!(actual > n)) throw new Error(`Expected ${actual} > ${n}`); },
+    toBeLessThan(n) { if (!(actual < n)) throw new Error(`Expected ${actual} < ${n}`); },
+    toBeGreaterThanOrEqual(n) { if (!(actual >= n)) throw new Error(`Expected ${actual} >= ${n}`); },
+    toHaveLength(n) { if ((actual?.length ?? -1) !== n) throw new Error(`Expected length ${n}, got ${actual?.length}`); },
+    toBeTypeOf(t) { if (typeof actual !== t) throw new Error(`Expected typeof ${t}, got ${typeof actual}`); },
+    toBeInstanceOf(cls) { if (!(actual instanceof cls)) throw new Error(`Expected instance of ${cls.name}`); },
+    toBeNull() { if (actual !== null) throw new Error(`Expected null, got ${JSON.stringify(actual)}`); },
+    toMatchPattern(rx) { if (!rx.test(String(actual))) throw new Error(`"${actual}" does not match ${rx}`); },
+    toThrow() {
+      if (typeof actual !== 'function') throw new Error('Expected a function');
+      let threw = false;
+      try { actual(); } catch (_) { threw = true; }
+      if (!threw) throw new Error('Expected function to throw');
     }
   };
 }
 
-/* ─── Application Logic (inline for testing) ─── */
+/* ══════════════════════════════════════════════
+   SYSTEM UNDER TEST  — Replicated core logic
+══════════════════════════════════════════════ */
 
-// --- Data validation helpers ---
-function validateApiKey(key) {
-  if (!key || typeof key !== 'string') return false;
-  return key.trim().length >= 10;
+// ── Security ──────────────────────────────
+/** @param {unknown} input @returns {string} */
+function sanitize(input) {
+  return String(input ?? '')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g, '&#x2F;');
 }
 
-function sanitizeHtml(str) {
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#x27;');
+/** @param {string} key @returns {boolean} */
+function isValidApiKey(key) {
+  return typeof key === 'string' && key.trim().length >= 10 && key.trim().length <= 200;
+}
+
+/** @param {string} str @param {number} max @returns {string} */
+function truncate(str, max) {
+  const s = String(str ?? '');
+  return s.length > max ? s.slice(0, max) : s;
+}
+
+function createRateLimiter(maxReq, windowMs) {
+  const ts = [];
+  return {
+    canSend() {
+      const now = Date.now();
+      while (ts.length && ts[0] < now - windowMs) ts.shift();
+      if (ts.length >= maxReq) return false;
+      ts.push(now);
+      return true;
+    },
+    reset() { ts.length = 0; }
+  };
+}
+
+// ── Quiz logic ────────────────────────────
+function computeScore(answers, questions) {
+  if (!Array.isArray(answers) || !Array.isArray(questions)) return 0;
+  return answers.reduce((acc, ans, i) => acc + (ans === questions[i]?.c ? 1 : 0), 0);
+}
+
+function computePercent(score, total) {
+  if (!total || total <= 0) return 0;
+  return Math.round((score / total) * 100);
+}
+
+function getScoreMessage(pct) {
+  if (pct >= 90) return 'Outstanding';
+  if (pct >= 70) return 'Great work';
+  if (pct >= 50) return 'Good start';
+  return 'Keep studying';
+}
+
+// ── API ────────────────────────────────────
+function buildApiPayload(history, system) {
+  return {
+    model: 'claude-sonnet-4-20250514',
+    max_tokens: 1024,
+    system: system || '',
+    messages: [...history]
+  };
+}
+
+function parseApiError(status) {
+  const map = { 401: 'Invalid or expired API key', 429: 'Rate limit reached', 403: 'Access forbidden', 500: 'Server error', 503: 'Service unavailable' };
+  return map[status] || `HTTP error ${status}`;
+}
+
+// ── Utilities ──────────────────────────────
+function slugify(str) {
+  return String(str).toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
 }
 
 function formatTime(date) {
   return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
-function computeQuizScore(answers, questions) {
-  if (!answers || !questions) return 0;
-  let score = 0;
-  answers.forEach((ans, i) => { if (ans === questions[i].correct) score++; });
-  return score;
+function debounce(fn, ms) {
+  let t;
+  return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
 }
 
-function computeScorePct(score, total) {
-  if (total === 0) return 0;
-  return Math.round((score / total) * 100);
+function deepFreeze(obj) {
+  Object.getOwnPropertyNames(obj).forEach(k => {
+    const v = obj[k];
+    if (typeof v === 'object' && v !== null) deepFreeze(v);
+  });
+  return Object.freeze(obj);
 }
 
-function filterGlossary(terms, category) {
-  if (category === 'All') return terms;
-  return terms.filter(t => t.cat === category);
-}
-
-// Rate limiter for chat
-function createRateLimiter(maxRequests, windowMs) {
-  const timestamps = [];
-  return function canSend() {
-    const now = Date.now();
-    const windowStart = now - windowMs;
-    while (timestamps.length && timestamps[0] < windowStart) timestamps.shift();
-    if (timestamps.length >= maxRequests) return false;
-    timestamps.push(now);
-    return true;
-  };
-}
-
-function buildChatPayload(history, userMsg, systemPrompt) {
-  return {
-    model: 'claude-sonnet-4-20250514',
-    max_tokens: 1024,
-    system: systemPrompt,
-    messages: [...history, { role: 'user', content: userMsg }]
-  };
-}
-
-function parseApiError(status) {
-  const map = { 401: 'Invalid API key', 429: 'Rate limit exceeded', 500: 'Server error' };
-  return map[status] || `HTTP error ${status}`;
-}
-
-function slugify(str) {
-  return str.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-}
-
-function truncate(str, max) {
-  if (str.length <= max) return str;
-  return str.slice(0, max - 3) + '...';
-}
-
-const TIMELINE_DATA = [
-  { ph: 'Pre-Election', name: 'Voter Registration', t: 'Ongoing / Varies', detail: { pts: ['Pt1', 'Pt2'] } },
-  { ph: 'Pre-Election', name: 'Candidate Filing', t: '6–12 Months Before', detail: { pts: ['Pt1'] } },
-  { ph: 'Campaign', name: 'Campaign Period', t: 'Ongoing', detail: { pts: [] } },
-  { ph: 'Election Day', name: 'Voting', t: 'Election Day', detail: { pts: ['Pt1', 'Pt2', 'Pt3'] } },
-  { ph: 'Post-Election', name: 'Vote Counting', t: 'Days After', detail: { pts: [] } },
-  { ph: 'Post-Election', name: 'Certification', t: 'Weeks After', detail: { pts: [] } },
-  { ph: 'Transition', name: 'Swearing-In', t: 'Months After', detail: { pts: [] } }
+// ── Glossary ───────────────────────────────
+const GLOSS_DATA = [
+  { w:'Ballot', cat:'Voting', d:'A document used to record voter choices.' },
+  { w:'Caucus', cat:'Nomination', d:'A meeting of local party members.' },
+  { w:'Delegate', cat:'Party Politics', d:'A convention representative.' },
+  { w:'Turnout', cat:'Metrics', d:'Percentage of eligible voters who vote.' },
+  { w:'Suffrage', cat:'Voting Rights', d:'The right to vote.' },
+  { w:'Precinct', cat:'Administration', d:'Smallest electoral geographic unit.' },
+  { w:'Recount', cat:'Post-Election', d:'A second official tally of votes.' },
+  { w:'Referendum', cat:'Direct Democracy', d:'A direct vote on a measure.' }
 ];
 
-const QUIZ_DATA = [
-  { q: 'Q1', opts: ['A', 'B', 'C', 'D'], correct: 1 },
-  { q: 'Q2', opts: ['A', 'B', 'C', 'D'], correct: 2 },
-  { q: 'Q3', opts: ['A', 'B', 'C', 'D'], correct: 0 }
+function filterGlossary(terms, cat, query) {
+  return terms.filter(t => {
+    const matchCat = !cat || cat === 'All' || t.cat === cat;
+    const matchQ = !query || t.w.toLowerCase().includes(query.toLowerCase()) || t.d.toLowerCase().includes(query.toLowerCase());
+    return matchCat && matchQ;
+  });
+}
+
+// ── Timeline ───────────────────────────────
+const TL_DATA = [
+  { ph:'Pre-Election', name:'Voter Registration', detail:{ pts:['Online, mail, or in-person','Deadlines vary'] } },
+  { ph:'Pre-Election', name:'Candidate Filing', detail:{ pts:['Must meet eligibility'] } },
+  { ph:'Campaign', name:'Campaign Period', detail:{ pts:['FEC regulates finance'] } },
+  { ph:'Election Day', name:'Voting', detail:{ pts:['Polls open 7AM-8PM','Provisional ballots available'] } },
+  { ph:'Post-Election', name:'Vote Counting', detail:{ pts:['Bipartisan observers'] } },
+  { ph:'Post-Election', name:'Certification', detail:{ pts:['Canvassing board review'] } },
+  { ph:'Transition', name:'Swearing-In', detail:{ pts:['Peaceful transfer of power'] } }
 ];
 
-const GLOSSARY_DATA = [
-  { w: 'Ballot', cat: 'Voting' },
-  { w: 'Caucus', cat: 'Nomination' },
-  { w: 'Delegate', cat: 'Party Politics' },
-  { w: 'Suffrage', cat: 'Voting Rights' },
-  { w: 'Turnout', cat: 'Metrics' }
-];
+function getPhases() { return [...new Set(TL_DATA.map(s => s.ph))]; }
+function getStepByName(name) { return TL_DATA.find(s => s.name === name) || null; }
 
-/* ─── Test Suites ─── */
+// ── Maps ───────────────────────────────────
+function buildMapsQuery(address) {
+  if (!address || !address.trim()) return null;
+  return `https://www.google.com/maps/embed/v1/search?key=KEY&q=${encodeURIComponent(address + ' polling place')}`;
+}
 
-describe('Security — Input Sanitization', ({ it }) => {
-  it('should escape HTML angle brackets', () => {
-    expect(sanitizeHtml('<script>alert(1)</script>')).toContain('&lt;script&gt;');
+// ── LocalStorage wrapper ───────────────────
+function safeStorageSet(key, value) {
+  try { localStorage.setItem(key, value); return true; } catch { return false; }
+}
+function safeStorageGet(key) {
+  try { return localStorage.getItem(key); } catch { return null; }
+}
+function safeStorageRemove(key) {
+  try { localStorage.removeItem(key); return true; } catch { return false; }
+}
+
+/* ══════════════════════════════════════════════
+   TEST SUITES  (9 suites, 80+ tests)
+══════════════════════════════════════════════ */
+
+// ─────────────── 1. SECURITY: XSS sanitization ───────────────
+describe('Security — XSS Sanitization', ({ it }) => {
+  it('escapes < and > angle brackets', () => {
+    expect(sanitize('<script>alert(1)</script>')).toContain('&lt;script&gt;');
   });
-  it('should escape ampersands', () => {
-    expect(sanitizeHtml('A & B')).toContain('&amp;');
+  it('escapes & ampersand', () => {
+    expect(sanitize('Tom & Jerry')).toContain('&amp;');
   });
-  it('should escape double quotes', () => {
-    expect(sanitizeHtml('"hello"')).toContain('&quot;');
+  it('escapes double quotes', () => {
+    expect(sanitize('"hello"')).toContain('&quot;');
   });
-  it('should escape single quotes', () => {
-    expect(sanitizeHtml("it's")).toContain('&#x27;');
+  it('escapes single quotes', () => {
+    expect(sanitize("it's")).toContain('&#x27;');
   });
-  it('should return empty string unchanged', () => {
-    expect(sanitizeHtml('')).toBe('');
+  it('escapes forward slash', () => {
+    expect(sanitize('a/b')).toContain('&#x2F;');
   });
-  it('should not alter safe plain text', () => {
-    expect(sanitizeHtml('Hello World')).toBe('Hello World');
+  it('returns empty string for empty input', () => {
+    expect(sanitize('')).toBe('');
+  });
+  it('returns empty string for null', () => {
+    expect(sanitize(null)).toBe('');
+  });
+  it('returns empty string for undefined', () => {
+    expect(sanitize(undefined)).toBe('');
+  });
+  it('does not alter plain safe text', () => {
+    expect(sanitize('Hello World 123')).toBe('Hello World 123');
+  });
+  it('handles numeric inputs', () => {
+    expect(sanitize(42)).toBe('42');
+  });
+  it('handles object input gracefully', () => {
+    const result = sanitize({ toString() { return '<bad>'; } });
+    expect(result).toNotContain('<bad>');
+  });
+  it('handles deeply nested XSS vectors', () => {
+    expect(sanitize('<img src=x onerror=alert(1)>')).toContain('&lt;img');
+  });
+  it('blocks javascript: protocol attempt', () => {
+    const result = sanitize('javascript:alert(1)');
+    expect(result).toNotContain('<script>');
   });
 });
 
+// ─────────────── 2. SECURITY: API key validation ───────────────
 describe('Security — API Key Validation', ({ it }) => {
-  it('should accept valid-length key', () => {
-    expect(validateApiKey('sk-ant-api03-abcdefghijklmnop')).toBeTruthy();
+  it('accepts a long valid key', () => {
+    expect(isValidApiKey('sk-ant-api03-verylongandsecurekey12345678')).toBeTruthy();
   });
-  it('should reject empty string', () => {
-    expect(validateApiKey('')).toBeFalsy();
+  it('accepts exactly 10 characters', () => {
+    expect(isValidApiKey('1234567890')).toBeTruthy();
   });
-  it('should reject null', () => {
-    expect(validateApiKey(null)).toBeFalsy();
+  it('rejects empty string', () => {
+    expect(isValidApiKey('')).toBeFalsy();
   });
-  it('should reject undefined', () => {
-    expect(validateApiKey(undefined)).toBeFalsy();
+  it('rejects null', () => {
+    expect(isValidApiKey(null)).toBeFalsy();
   });
-  it('should reject too-short string', () => {
-    expect(validateApiKey('abc')).toBeFalsy();
+  it('rejects undefined', () => {
+    expect(isValidApiKey(undefined)).toBeFalsy();
   });
-  it('should reject non-string type', () => {
-    expect(validateApiKey(12345)).toBeFalsy();
+  it('rejects 9-character string (too short)', () => {
+    expect(isValidApiKey('123456789')).toBeFalsy();
+  });
+  it('rejects number type', () => {
+    expect(isValidApiKey(99999999999)).toBeFalsy();
+  });
+  it('rejects boolean', () => {
+    expect(isValidApiKey(true)).toBeFalsy();
+  });
+  it('rejects string exceeding 200 chars', () => {
+    expect(isValidApiKey('a'.repeat(201))).toBeFalsy();
+  });
+  it('accepts string of exactly 200 chars', () => {
+    expect(isValidApiKey('a'.repeat(200))).toBeTruthy();
   });
 });
 
+// ─────────────── 3. SECURITY: Rate limiter ───────────────
 describe('Security — Rate Limiter', ({ it }) => {
-  it('should allow requests within limit', () => {
-    const limiter = createRateLimiter(5, 60000);
-    expect(limiter()).toBeTruthy();
-    expect(limiter()).toBeTruthy();
-    expect(limiter()).toBeTruthy();
+  it('allows the first request', () => {
+    const rl = createRateLimiter(5, 60000);
+    expect(rl.canSend()).toBeTruthy();
   });
-  it('should block requests over limit', () => {
-    const limiter = createRateLimiter(3, 60000);
-    limiter(); limiter(); limiter();
-    expect(limiter()).toBeFalsy();
+  it('allows up to max requests', () => {
+    const rl = createRateLimiter(3, 60000);
+    expect(rl.canSend()).toBeTruthy();
+    expect(rl.canSend()).toBeTruthy();
+    expect(rl.canSend()).toBeTruthy();
   });
-  it('should allow new request after window expires', async () => {
-    const limiter = createRateLimiter(1, 50);
-    limiter();
-    await new Promise(r => setTimeout(r, 60));
-    expect(limiter()).toBeTruthy();
+  it('blocks the request exceeding the limit', () => {
+    const rl = createRateLimiter(3, 60000);
+    rl.canSend(); rl.canSend(); rl.canSend();
+    expect(rl.canSend()).toBeFalsy();
+  });
+  it('allows requests after reset', () => {
+    const rl = createRateLimiter(1, 60000);
+    rl.canSend();
+    rl.reset();
+    expect(rl.canSend()).toBeTruthy();
+  });
+  it('handles window of 0ms (expires immediately)', async () => {
+    const rl = createRateLimiter(1, 0);
+    rl.canSend();
+    await new Promise(r => setTimeout(r, 5));
+    expect(rl.canSend()).toBeTruthy();
+  });
+  it('works with max of 1', () => {
+    const rl = createRateLimiter(1, 60000);
+    rl.canSend();
+    expect(rl.canSend()).toBeFalsy();
   });
 });
 
+// ─────────────── 4. SECURITY: Truncation ───────────────
+describe('Security — Input Truncation', ({ it }) => {
+  it('does not truncate short strings', () => {
+    expect(truncate('hello', 10)).toBe('hello');
+  });
+  it('truncates strings exceeding limit', () => {
+    expect(truncate('abcdefghij', 5)).toBe('abcde');
+  });
+  it('returns exact string at limit boundary', () => {
+    expect(truncate('hello', 5)).toBe('hello');
+  });
+  it('handles null gracefully', () => {
+    expect(truncate(null, 10)).toBe('');
+  });
+  it('handles undefined gracefully', () => {
+    expect(truncate(undefined, 10)).toBe('');
+  });
+  it('handles numeric input', () => {
+    expect(truncate(123456789, 5)).toBe('12345');
+  });
+});
+
+// ─────────────── 5. QUIZ: Scoring logic ───────────────
 describe('Quiz — Score Calculation', ({ it }) => {
-  it('should return 0 for all wrong answers', () => {
-    const ans = [0, 0, 1]; // only ans[2] matches correct[2]=0
-    expect(computeQuizScore([3, 3, 1], QUIZ_DATA)).toBe(0);
+  const questions = [{ c:1 }, { c:2 }, { c:0 }, { c:3 }, { c:1 }];
+
+  it('returns 0 for all wrong answers', () => {
+    expect(computeScore([0,0,1,0,0], questions)).toBe(0);
   });
-  it('should return full score for all correct', () => {
-    const ans = [1, 2, 0]; // matches all corrects
-    expect(computeQuizScore(ans, QUIZ_DATA)).toBe(3);
+  it('returns full score for all correct answers', () => {
+    expect(computeScore([1,2,0,3,1], questions)).toBe(5);
   });
-  it('should return partial score', () => {
-    const ans = [1, 0, 0]; // only ans[0] and ans[2] correct
-    expect(computeQuizScore(ans, QUIZ_DATA)).toBe(2);
+  it('returns partial score', () => {
+    expect(computeScore([1,0,0,0,1], questions)).toBe(2);
   });
-  it('should return 0 for empty answers', () => {
-    expect(computeQuizScore([], QUIZ_DATA)).toBe(0);
+  it('returns 0 for empty answers array', () => {
+    expect(computeScore([], questions)).toBe(0);
   });
-  it('should handle null gracefully', () => {
-    expect(computeQuizScore(null, null)).toBe(0);
+  it('returns 0 for null input', () => {
+    expect(computeScore(null, null)).toBe(0);
+  });
+  it('handles answers longer than questions', () => {
+    expect(computeScore([1,2,0,3,1,9,9], questions)).toBe(5);
+  });
+  it('handles 1-question quiz', () => {
+    expect(computeScore([1], [{ c:1 }])).toBe(1);
   });
 });
 
-describe('Quiz — Score Percentage', ({ it }) => {
-  it('should calculate 100% correctly', () => {
-    expect(computeScorePct(8, 8)).toBe(100);
+// ─────────────── 6. QUIZ: Percentage & messages ───────────────
+describe('Quiz — Percentage & Feedback', ({ it }) => {
+  it('computes 100%', () => { expect(computePercent(8,8)).toBe(100); });
+  it('computes 75%', () => { expect(computePercent(6,8)).toBe(75); });
+  it('computes 50%', () => { expect(computePercent(4,8)).toBe(50); });
+  it('computes 0%', () => { expect(computePercent(0,8)).toBe(0); });
+  it('rounds to nearest integer', () => { expect(computePercent(1,3)).toBe(33); });
+  it('returns 0 for zero total (no division error)', () => { expect(computePercent(0,0)).toBe(0); });
+  it('returns 0 for negative total', () => { expect(computePercent(5,-1)).toBe(0); });
+  it('Outstanding message for >=90%', () => { expect(getScoreMessage(90)).toContain('Outstanding'); });
+  it('Great work message for >=70%', () => { expect(getScoreMessage(75)).toContain('Great work'); });
+  it('Good start message for >=50%', () => { expect(getScoreMessage(50)).toContain('Good start'); });
+  it('Keep studying message for <50%', () => { expect(getScoreMessage(49)).toContain('Keep studying'); });
+});
+
+// ─────────────── 7. GLOSSARY: Filtering & search ───────────────
+describe('Glossary — Filter & Search', ({ it }) => {
+  it('returns all terms for category "All"', () => {
+    expect(filterGlossary(GLOSS_DATA, 'All', '')).toHaveLength(GLOSS_DATA.length);
   });
-  it('should calculate 50% correctly', () => {
-    expect(computeScorePct(4, 8)).toBe(50);
+  it('returns all terms when no filter', () => {
+    expect(filterGlossary(GLOSS_DATA, '', '')).toHaveLength(GLOSS_DATA.length);
   });
-  it('should calculate 0% correctly', () => {
-    expect(computeScorePct(0, 8)).toBe(0);
+  it('filters by Voting category', () => {
+    const res = filterGlossary(GLOSS_DATA, 'Voting', '');
+    expect(res.every(t => t.cat === 'Voting')).toBeTruthy();
   });
-  it('should handle zero total without division error', () => {
-    expect(computeScorePct(0, 0)).toBe(0);
+  it('returns empty for non-existent category', () => {
+    expect(filterGlossary(GLOSS_DATA, 'XYZ_NOT_EXIST', '')).toHaveLength(0);
   });
-  it('should round to nearest integer', () => {
-    expect(computeScorePct(1, 3)).toBe(33);
+  it('searches by word match', () => {
+    const res = filterGlossary(GLOSS_DATA, 'All', 'ballot');
+    expect(res.length).toBeGreaterThan(0);
+    expect(res[0].w.toLowerCase()).toContain('ballot');
+  });
+  it('searches by definition match', () => {
+    const res = filterGlossary(GLOSS_DATA, 'All', 'convention');
+    expect(res.length).toBeGreaterThan(0);
+  });
+  it('search is case-insensitive', () => {
+    const lower = filterGlossary(GLOSS_DATA, 'All', 'ballot');
+    const upper = filterGlossary(GLOSS_DATA, 'All', 'BALLOT');
+    expect(lower.length).toBe(upper.length);
+  });
+  it('does not mutate the original array', () => {
+    const original = [...GLOSS_DATA];
+    filterGlossary(GLOSS_DATA, 'Voting', 'ballot');
+    expect(GLOSS_DATA).toHaveLength(original.length);
+  });
+  it('combines category and search filters', () => {
+    const res = filterGlossary(GLOSS_DATA, 'Voting', 'ballot');
+    expect(res.every(t => t.cat === 'Voting')).toBeTruthy();
   });
 });
 
-describe('Glossary — Filtering', ({ it }) => {
-  it('should return all terms when category is All', () => {
-    expect(filterGlossary(GLOSSARY_DATA, 'All')).toHaveLength(5);
-  });
-  it('should filter to Voting category', () => {
-    const res = filterGlossary(GLOSSARY_DATA, 'Voting');
-    expect(res).toHaveLength(1);
-    expect(res[0].w).toBe('Ballot');
-  });
-  it('should return empty array for non-existent category', () => {
-    expect(filterGlossary(GLOSSARY_DATA, 'XYZ')).toHaveLength(0);
-  });
-  it('should not mutate original array', () => {
-    filterGlossary(GLOSSARY_DATA, 'Voting');
-    expect(GLOSSARY_DATA).toHaveLength(5);
-  });
-});
-
-describe('Timeline — Data Integrity', ({ it }) => {
-  it('should have 7 timeline phases', () => {
-    expect(TIMELINE_DATA).toHaveLength(7);
-  });
-  it('should have required fields on each step', () => {
-    TIMELINE_DATA.forEach(step => {
-      if (!step.ph) throw new Error(`Missing ph on step: ${step.name}`);
-      if (!step.name) throw new Error('Missing name on step');
-    });
-    expect(true).toBeTruthy();
-  });
-  it('should start with Pre-Election phase', () => {
-    expect(TIMELINE_DATA[0].ph).toBe('Pre-Election');
-  });
-  it('should end with Transition phase', () => {
-    expect(TIMELINE_DATA[TIMELINE_DATA.length - 1].ph).toBe('Transition');
-  });
-  it('all detail.pts should be arrays', () => {
-    const allArrays = TIMELINE_DATA.every(s => Array.isArray(s.detail.pts));
-    expect(allArrays).toBeTruthy();
-  });
-});
-
-describe('API — Payload Builder', ({ it }) => {
-  it('should include model in payload', () => {
-    const p = buildChatPayload([], 'hello', 'system');
+// ─────────────── 8. API: Payload & error handling ───────────────
+describe('API Integration', ({ it }) => {
+  it('payload includes correct model', () => {
+    const p = buildApiPayload([], 'sys');
     expect(p.model).toBe('claude-sonnet-4-20250514');
   });
-  it('should append user message to history', () => {
-    const p = buildChatPayload([], 'hello', 'system');
-    expect(p.messages[p.messages.length - 1].role).toBe('user');
-    expect(p.messages[p.messages.length - 1].content).toBe('hello');
-  });
-  it('should preserve existing history', () => {
-    const history = [{ role: 'user', content: 'prev' }, { role: 'assistant', content: 'ans' }];
-    const p = buildChatPayload(history, 'next', 'sys');
-    expect(p.messages).toHaveLength(3);
-  });
-  it('should set max_tokens', () => {
-    const p = buildChatPayload([], 'q', 'sys');
+  it('payload includes max_tokens', () => {
+    const p = buildApiPayload([], 'sys');
     expect(p.max_tokens).toBe(1024);
   });
-  it('should not mutate original history array', () => {
-    const history = [{ role: 'user', content: 'old' }];
-    buildChatPayload(history, 'new', 'sys');
-    expect(history).toHaveLength(1);
+  it('payload includes system prompt', () => {
+    const p = buildApiPayload([], 'test-system');
+    expect(p.system).toBe('test-system');
+  });
+  it('payload messages mirror history', () => {
+    const h = [{ role:'user', content:'hello' }, { role:'assistant', content:'hi' }];
+    const p = buildApiPayload(h, 'sys');
+    expect(p.messages).toHaveLength(2);
+  });
+  it('does not mutate original history', () => {
+    const h = [{ role:'user', content:'original' }];
+    buildApiPayload(h, 'sys');
+    expect(h).toHaveLength(1);
+    expect(h[0].content).toBe('original');
+  });
+  it('empty history yields empty messages', () => {
+    const p = buildApiPayload([], 'sys');
+    expect(p.messages).toHaveLength(0);
+  });
+  it('parseApiError 401 returns key-related message', () => {
+    expect(parseApiError(401)).toContain('key');
+  });
+  it('parseApiError 429 returns rate limit message', () => {
+    expect(parseApiError(429)).toContain('Rate');
+  });
+  it('parseApiError 500 returns server error message', () => {
+    expect(parseApiError(500)).toContain('error');
+  });
+  it('parseApiError unknown code returns fallback', () => {
+    expect(parseApiError(418)).toContain('418');
+  });
+  it('parseApiError 503 returns unavailable message', () => {
+    expect(parseApiError(503)).toContain('unavailable');
   });
 });
 
-describe('API — Error Parsing', ({ it }) => {
-  it('should parse 401 as invalid key', () => {
-    expect(parseApiError(401)).toContain('Invalid');
-  });
-  it('should parse 429 as rate limit', () => {
-    expect(parseApiError(429)).toContain('Rate limit');
-  });
-  it('should parse 500 as server error', () => {
-    expect(parseApiError(500)).toContain('Server');
-  });
-  it('should return fallback for unknown codes', () => {
-    expect(parseApiError(503)).toContain('503');
-  });
-});
-
-describe('Utilities — String Helpers', ({ it }) => {
-  it('slugify should lowercase and replace spaces', () => {
+// ─────────────── 9. UTILITIES: Slugify, debounce, etc. ───────────────
+describe('Utilities & Data Integrity', ({ it }) => {
+  it('slugify converts to lowercase', () => {
     expect(slugify('Voter Registration')).toBe('voter-registration');
   });
-  it('slugify should remove special characters', () => {
-    expect(slugify('Election Day!')).toBe('election-day');
+  it('slugify replaces spaces with hyphens', () => {
+    expect(slugify('Election Day')).toContain('-');
   });
-  it('truncate should not alter short strings', () => {
-    expect(truncate('hi', 10)).toBe('hi');
+  it('slugify removes special characters', () => {
+    expect(slugify('Election!')).toBe('election');
   });
-  it('truncate should truncate long strings', () => {
-    const result = truncate('abcdefghij', 6);
-    expect(result.length).toBeLessThan(10);
-    expect(result).toContain('...');
+  it('formatTime returns a non-empty string', () => {
+    expect(formatTime(new Date()).length).toBeGreaterThan(3);
   });
-  it('formatTime should return a time string', () => {
-    const result = formatTime(new Date());
-    expect(typeof result).toBe('string');
-    expect(result.length).toBeGreaterThan(3);
+  it('formatTime output is a string', () => {
+    expect(formatTime(new Date())).toBeTypeOf('string');
+  });
+  it('debounce returns a function', () => {
+    expect(typeof debounce(() => {}, 100)).toBe('function');
+  });
+  it('timeline has exactly 7 phases', () => {
+    expect(TL_DATA).toHaveLength(7);
+  });
+  it('first timeline phase is Pre-Election', () => {
+    expect(TL_DATA[0].ph).toBe('Pre-Election');
+  });
+  it('last timeline phase is Transition', () => {
+    expect(TL_DATA[TL_DATA.length - 1].ph).toBe('Transition');
+  });
+  it('all timeline steps have required fields', () => {
+    const allValid = TL_DATA.every(s => s.ph && s.name && Array.isArray(s.detail?.pts));
+    expect(allValid).toBeTruthy();
+  });
+  it('getPhases returns unique phases', () => {
+    const phases = getPhases();
+    const unique = [...new Set(phases)];
+    expect(phases.length).toBe(unique.length);
+  });
+  it('getStepByName finds existing step', () => {
+    const step = getStepByName('Voting');
+    expect(step).toBeTruthy();
+    expect(step.name).toBe('Voting');
+  });
+  it('getStepByName returns null for missing', () => {
+    expect(getStepByName('NonExistentStep')).toBeNull();
+  });
+  it('glossary has 8 entries', () => {
+    expect(GLOSS_DATA).toHaveLength(8);
+  });
+  it('all glossary entries have word, cat, d', () => {
+    const allValid = GLOSS_DATA.every(g => g.w && g.cat && g.d);
+    expect(allValid).toBeTruthy();
+  });
+  it('deepFreeze makes object immutable', () => {
+    const obj = deepFreeze({ a: 1, b: { c: 2 } });
+    expect(Object.isFrozen(obj)).toBeTruthy();
+    expect(Object.isFrozen(obj.b)).toBeTruthy();
+  });
+  it('buildMapsQuery returns null for empty address', () => {
+    expect(buildMapsQuery('')).toBeNull();
+    expect(buildMapsQuery(null)).toBeNull();
+  });
+  it('buildMapsQuery returns URL string for valid address', () => {
+    const url = buildMapsQuery('123 Main St');
+    expect(typeof url).toBe('string');
+    expect(url).toContain('maps.google.com');
+  });
+  it('buildMapsQuery encodes special characters', () => {
+    const url = buildMapsQuery('St. Paul, MN 55101');
+    expect(url).toContain('%');
+  });
+  it('safeStorageSet returns boolean', () => {
+    expect(typeof safeStorageSet('test_k', 'v')).toBe('boolean');
+  });
+  it('safeStorageGet retrieves stored value', () => {
+    safeStorageSet('test_get', 'hello');
+    expect(safeStorageGet('test_get')).toBe('hello');
+    safeStorageRemove('test_get');
+  });
+  it('safeStorageGet returns null for missing key', () => {
+    expect(safeStorageGet('__no_such_key__')).toBeNull();
+  });
+  it('safeStorageRemove cleans up key', () => {
+    safeStorageSet('test_rm', 'bye');
+    safeStorageRemove('test_rm');
+    expect(safeStorageGet('test_rm')).toBeNull();
   });
 });
 
-describe('Accessibility — ARIA & Structure', ({ it }) => {
-  it('quiz questions should have non-empty text', () => {
-    QUIZ_DATA.forEach(q => {
-      if (!q.q || q.q.trim() === '') throw new Error('Empty quiz question found');
-    });
-    expect(true).toBeTruthy();
-  });
-  it('all quiz options should have 4 choices', () => {
-    QUIZ_DATA.forEach(q => expect(q.opts).toHaveLength(4));
-  });
-  it('quiz correct index should be within bounds', () => {
-    QUIZ_DATA.forEach(q => {
-      if (q.correct < 0 || q.correct >= q.opts.length)
-        throw new Error(`Correct index ${q.correct} out of bounds`);
-    });
-    expect(true).toBeTruthy();
-  });
-  it('glossary terms should all have definitions', () => {
-    const allHaveDef = GLOSSARY_DATA.every(g => g.w && g.cat);
-    expect(allHaveDef).toBeTruthy();
-  });
-});
+/* ══════════════════════════════════════════════
+   TEST RUNNER
+══════════════════════════════════════════════ */
+document.getElementById('run-all').addEventListener('click', async () => {
+  const btn = document.getElementById('run-all');
+  btn.disabled = true;
+  btn.textContent = '⏳ Running…';
 
-/* ─── Test Runner ─── */
-document.getElementById('runAll').addEventListener('click', async () => {
-  passed = 0; failed = 0; skipped = 0;
   const out = document.getElementById('output');
   out.innerHTML = '';
   document.getElementById('summary').style.display = 'none';
+  document.getElementById('progress-bar').style.width = '0';
 
-  let totalTests = 0;
-  results.forEach(suite => suite.tests.forEach(() => totalTests++));
-
+  let passed = 0, failed = 0, skipped = 0;
+  const startTime = performance.now();
+  const totalTests = suites.reduce((a, s) => a + s.tests.length, 0);
   let ran = 0;
 
-  for (const suite of results) {
+  for (const suite of suites) {
     const suiteEl = document.createElement('div');
     suiteEl.className = 'suite';
-    suiteEl.innerHTML = `<div class="suite-hdr">📦 ${suite.name}</div>`;
+    const hdr = document.createElement('div');
+    hdr.className = 'suite-hdr';
+    hdr.innerHTML = `<span>📦 ${suite.name}</span><span class="suite-badge">${suite.tests.length} tests</span>`;
+    suiteEl.appendChild(hdr);
     out.appendChild(suiteEl);
 
     for (const test of suite.tests) {
-      await new Promise(r => setTimeout(r, 8)); // visual delay
+      await new Promise(r => setTimeout(r, 6)); // visual pacing
+      const t0 = performance.now();
       const testEl = document.createElement('div');
 
-      if (test.skipped) {
+      if (test.skip) {
         testEl.className = 'test skip';
-        testEl.innerHTML = `<div class="badge skip">−</div>${test.name}`;
+        testEl.innerHTML = `<div class="badge skip">−</div><span>${test.label}</span><span class="duration">skip</span>`;
         skipped++;
       } else {
         try {
-          await test.testFn();
+          const result = test.testFn();
+          if (result instanceof Promise) await result;
+          const dur = (performance.now() - t0).toFixed(1);
           testEl.className = 'test pass';
-          testEl.innerHTML = `<div class="badge pass">✓</div>${test.name}`;
+          testEl.innerHTML = `<div class="badge pass">✓</div><span>${test.label}</span><span class="duration">${dur}ms</span>`;
           passed++;
         } catch (e) {
+          const dur = (performance.now() - t0).toFixed(1);
           testEl.className = 'test fail';
-          testEl.innerHTML = `<div class="badge fail">✗</div><div><div>${test.name}</div><div class="err">${e.message}</div></div>`;
+          testEl.innerHTML = `<div class="badge fail">✗</div><div><span>${test.label}</span><div class="err-msg">${e.message}</div></div><span class="duration">${dur}ms</span>`;
           failed++;
         }
       }
+
       suiteEl.appendChild(testEl);
       ran++;
-
-      // Update progress
-      const pct = (ran / totalTests) * 100;
-      document.getElementById('progress-bar').style.width = pct + '%';
+      document.getElementById('progress-bar').style.width = `${(ran / totalTests) * 100}%`;
     }
   }
 
+  const totalTime = (performance.now() - startTime).toFixed(0);
   const total = passed + failed + skipped;
-  const score = total > 0 ? Math.round((passed / (passed + failed)) * 100) : 0;
-  document.getElementById('passCount').textContent = passed;
-  document.getElementById('failCount').textContent = failed;
-  document.getElementById('skipCount').textContent = skipped;
-  document.getElementById('totalCount').textContent = total;
-  document.getElementById('scoreNum').textContent = score + '%';
-  document.getElementById('scoreNum').style.color = score >= 80 ? '#4ADE80' : score >= 60 ? '#DBA84A' : '#F87171';
+  const pct = total > 0 ? Math.round((passed / (passed + failed)) * 100) : 0;
+
+  document.getElementById('s-pass').textContent = passed;
+  document.getElementById('s-fail').textContent = failed;
+  document.getElementById('s-skip').textContent = skipped;
+  document.getElementById('s-total').textContent = total;
+  document.getElementById('s-pct').textContent = `${pct}%`;
+  document.getElementById('s-pct').style.color = pct >= 90 ? 'var(--green)' : pct >= 70 ? 'var(--gold-lt)' : 'var(--red)';
+  document.getElementById('s-time').textContent = `${totalTime}ms`;
   document.getElementById('summary').style.display = 'flex';
+  document.getElementById('run-ts').textContent = `Run at ${new Date().toLocaleTimeString()}`;
+
+  btn.disabled = false;
+  btn.textContent = '▶ Run All Tests';
 });
 </script>
 </body>

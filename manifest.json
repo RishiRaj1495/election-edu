@@ -1,39 +1,70 @@
 {
   "name": "ElectEd — Election Process Education",
   "short_name": "ElectEd",
-  "description": "An AI-powered interactive platform to understand the complete election process, timelines, and democratic participation.",
+  "description": "AI-powered civic education platform — understand the complete election process, timelines, and democratic participation.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#0D1117",
   "theme_color": "#C08B2F",
   "orientation": "any",
-  "lang": "en",
+  "lang": "en-US",
+  "dir": "ltr",
   "categories": ["education", "government", "politics"],
+  "iarc_rating_id": "",
+  "related_applications": [],
+  "prefer_related_applications": false,
   "icons": [
     {
-      "src": "https://via.placeholder.com/192x192/C08B2F/0D1117?text=E",
+      "src": "https://placehold.co/192x192/C08B2F/0D1117?text=E",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
-      "src": "https://via.placeholder.com/512x512/C08B2F/0D1117?text=E",
+      "src": "https://placehold.co/512x512/C08B2F/0D1117?text=E",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "maskable"
     }
   ],
-  "screenshots": [],
   "shortcuts": [
     {
-      "name": "Ask AI Assistant",
+      "name": "Election Timeline",
+      "short_name": "Timeline",
+      "description": "View the complete election process timeline",
+      "url": "/#timeline",
+      "icons": [{ "src": "https://placehold.co/192x192/C08B2F/0D1117?text=T", "sizes": "192x192" }]
+    },
+    {
+      "name": "AI Assistant",
+      "short_name": "Ask AI",
+      "description": "Ask the AI anything about elections",
       "url": "/#assistant",
-      "description": "Ask the AI anything about elections"
+      "icons": [{ "src": "https://placehold.co/192x192/C08B2F/0D1117?text=AI", "sizes": "192x192" }]
     },
     {
       "name": "Take the Quiz",
+      "short_name": "Quiz",
+      "description": "Test your election knowledge",
       "url": "/#quiz",
-      "description": "Test your election knowledge"
+      "icons": [{ "src": "https://placehold.co/192x192/C08B2F/0D1117?text=Q", "sizes": "192x192" }]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "https://placehold.co/1280x720/0D1117/C08B2F?text=ElectEd+Desktop",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "ElectEd desktop view"
+    },
+    {
+      "src": "https://placehold.co/390x844/0D1117/C08B2F?text=ElectEd+Mobile",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "ElectEd mobile view"
     }
   ]
 }
